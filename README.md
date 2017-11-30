@@ -14,6 +14,8 @@ npm install --save fiery
 
 ## Demo
 
+[Try it out!](https://dtinth.github.io/fiery/#GuestbookApp)
+
 <!-- scripts -->
 
 ```js
