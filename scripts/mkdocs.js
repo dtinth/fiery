@@ -91,7 +91,7 @@ const result = postProcessMarkdown(md.render(readme))
         };
         firebase.initializeApp(config);
       </script>
-      <script src="https://unpkg.com/fiery@0.0.1/umd/fiery.js"></script>
+      <script src="https://unpkg.com/fiery@0.0.2/umd/fiery.js"></script>
     `),
     section('UI kit', unlines([
       '<script type="text/babel">',
