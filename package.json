@@ -22,6 +22,7 @@
   "scripts": {
     "build": "rollup -c",
     "build:dev": "rollup -c -w",
+    "prepublish": "yarn build",
     "docs": "node scripts/mkdocs.js",
     "docs:dev": "onchange scripts/mkdocs.js README.md docs/UI.js -- node scripts/mkdocs.js",
     "dev": "concurrently --kill-others \"yarn build:dev\" \"yarn docs:dev\"",
