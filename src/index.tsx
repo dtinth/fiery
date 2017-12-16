@@ -18,7 +18,7 @@ export class Auth extends React.Component {
       },
       error => {
         this.setState({
-          userState: { _status: '💢', _error, _retry: () => this.observe() }
+          userState: { _status: '💢', _error: error, _retry: () => this.observe() }
         })
       }
     )
@@ -60,7 +60,7 @@ export class Data extends React.Component {
     this.setState({ dataState: { _status: '😀', _data: snapshot.val() } })
   }
   onError = (error) => {
-    this.setState({ dataState: { _status: '💢', _error, _retry: () => this.setDataRef(this.dataRef) } })
+    this.setState({ dataState: { _status: '💢', _error: error, _retry: () => this.setDataRef(this.dataRef) } })
   }
   render () {
     return this.props.children(this.state.dataState)
