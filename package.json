@@ -16,7 +16,7 @@
   },
   "name": "fiery",
   "description": "Easy declarative modern Firebase binding for React ^_^",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "umd/fiery.js",
   "dependencies": {},
   "scripts": {
@@ -41,5 +41,7 @@
     "url": "https://github.com/dtinth/fiery/issues"
   },
   "homepage": "https://github.com/dtinth/fiery#readme",
-  "files": [ "umd/fiery.js" ]
+  "files": [
+    "umd/fiery.js"
+  ]
 }
