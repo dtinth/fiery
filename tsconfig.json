@@ -5,7 +5,10 @@
     "jsx": "react",
     "target": "es5",
     "strict": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "rootDir": "src",
+    "outDir": "esm",
+    "declaration": true
   },
   "exclude": ["node_modules"]
 }
