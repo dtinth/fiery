@@ -1,81 +1,111 @@
-import React from 'react'
-import firebase from 'firebase'
+import * as React from 'react'
+import * as firebase from 'firebase'
 
 type DataState<T> =
-  { _status: '🕓' } |
-  { _status: '💢', _error: Error, _retry: () => any } |
-  { _status: '😀', _data: T }
+  | { _status: '🕓' }
+  | { _status: '💢'; _error: Error; _retry: () => any }
+  | { _status: '😀'; _data: T }
 
-export class Auth extends React.Component {
-  private unsubscribe: () => any
+export class Auth extends React.Component<{
+  children: (userState: DataState<firebase.User>) => React.ReactNode
+}> {
+  private unsubscribe: () => any = () => {}
 
   auth = firebase.auth()
-  state = { userState: { _status: '🕓' } }
-  observe () {
+  state = { userState: { _status: '🕓' } as DataState<firebase.User> }
+  observe() {
     this.unsubscribe = this.auth.onAuthStateChanged(
       user => {
         this.setState({ userState: { _status: '😀', _data: user } })
       },
       error => {
         this.setState({
-          userState: { _status: '💢', _error: error, _retry: () => this.observe() }
+          userState: {
+            _status: '💢',
+            _error: (error as any) as Error,
+            _retry: () => this.observe()
+          } as DataState<firebase.User>
         })
       }
     )
   }
-  componentDidMount () {
+  componentDidMount() {
     this.observe()
   }
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.unsubscribe()
   }
-  render () {
+  render() {
     return this.props.children(this.state.userState)
   }
 }
 
-export class Data extends React.Component {
-  private dataRef: any
-  state = { dataState: { _status: '🕓' } }
-  componentDidMount () {
+type DataProps = {
+  dataRef: firebase.database.Reference
+  children: (dataState: DataState<any>) => React.ReactNode
+}
+
+export class Data extends React.Component<DataProps> {
+  private dataRef?: firebase.database.Reference
+  state = { dataState: { _status: '🕓' } as DataState<any> }
+  componentDidMount() {
     this.setDataRef(this.props.dataRef)
   }
-  setDataRef (ref) {
+  setDataRef(ref: firebase.database.Reference) {
     if (this.dataRef) {
       this.dataRef.off('value', this.onUpdate)
     }
     this.dataRef = ref
     this.dataRef.on('value', this.onUpdate, this.onError)
-    this.setState({ dataState: { _status: '🕓' } })
+    this.setState({ dataState: { _status: '🕓' } as DataState<any> })
   }
-  componentWillUnmount () {
-    this.dataRef.off('value', this.onUpdate)
-  }
-  componentWillReceiveProps (nextProps) {
-    if (!nextProps.dataRef.isEqual(this.props.dataRef)) {
-      this.setDataRef(nextProps.dataRef)
+  componentWillUnmount() {
+    if (this.dataRef) {
+      this.dataRef.off('value', this.onUpdate)
     }
   }
-  onUpdate = (snapshot) => {
-    this.setState({ dataState: { _status: '😀', _data: snapshot.val() } })
+  componentDidUpdate(prevProps: DataProps) {
+    if (!this.props.dataRef.isEqual(prevProps.dataRef)) {
+      this.setDataRef(this.props.dataRef)
+    }
   }
-  onError = (error) => {
-    this.setState({ dataState: { _status: '💢', _error: error, _retry: () => this.setDataRef(this.dataRef) } })
+  onUpdate = (snapshot: firebase.database.DataSnapshot | null) => {
+    this.setState({
+      dataState: {
+        _status: '😀',
+        _data: snapshot && snapshot.val()
+      } as DataState<any>
+    })
   }
-  render () {
+  onError = (error: Error) => {
+    this.setState({
+      dataState: {
+        _status: '💢',
+        _error: error,
+        _retry: () => this.setDataRef(this.props.dataRef)
+      }
+    })
+  }
+  render() {
     return this.props.children(this.state.dataState)
   }
 }
 
-export function unwrap<V,T> (state: DataState<V>, spec: {
-  completed: (v: V) => T,
-  loading: () => T,
-  error: (error: Error, retry: () => any) => T
-}): T {
+export function unwrap<V, T = React.ReactNode>(
+  state: DataState<V>,
+  spec: {
+    completed: (v: V) => T
+    loading: () => T
+    error: (error: Error, retry: () => any) => T
+  }
+): T {
   switch (state._status) {
-    case '🕓': return spec.loading()
-    case '💢': return spec.error(state._error, state._retry)
-    case '😀': return spec.completed(state._data)
+    case '🕓':
+      return spec.loading()
+    case '💢':
+      return spec.error(state._error, state._retry)
+    case '😀':
+      return spec.completed(state._data)
   }
 }
 
