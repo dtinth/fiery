@@ -47,6 +47,7 @@ type DataProps = {
 
 export class Data extends React.Component<DataProps> {
   private dataRef?: firebase.database.Reference
+  private loaded = false
   state = { dataState: { _status: '🕓' } as DataState<any> }
   componentDidMount() {
     this.setDataRef(this.props.dataRef)
@@ -56,8 +57,11 @@ export class Data extends React.Component<DataProps> {
       this.dataRef.off('value', this.onUpdate)
     }
     this.dataRef = ref
+    this.loaded = false
     this.dataRef.on('value', this.onUpdate, this.onError)
-    this.setState({ dataState: { _status: '🕓' } as DataState<any> })
+    if (!this.loaded) {
+      this.setState({ dataState: { _status: '🕓' } as DataState<any> })
+    }
   }
   componentWillUnmount() {
     if (this.dataRef) {
@@ -70,6 +74,7 @@ export class Data extends React.Component<DataProps> {
     }
   }
   onUpdate = (snapshot: firebase.database.DataSnapshot | null) => {
+    this.loaded = true
     this.setState({
       dataState: {
         _status: '😀',
@@ -78,6 +83,7 @@ export class Data extends React.Component<DataProps> {
     })
   }
   onError = (error: Error) => {
+    this.loaded = false
     this.setState({
       dataState: {
         _status: '💢',
