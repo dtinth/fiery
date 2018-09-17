@@ -48,6 +48,7 @@
   },
   "homepage": "https://github.com/dtinth/fiery#readme",
   "files": [
-    "umd/fiery.js"
+    "umd/fiery.js",
+    "esm"
   ]
 }
