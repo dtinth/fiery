@@ -9,18 +9,14 @@ const twemoji = require('twemoji')
 
 const md = require('markdown-it')({
   html: true,
-  highlight: function (str, lang) {
+  highlight: function(str, lang) {
     if (lang === 'js') {
-      const code = [ ]
+      const code = []
       const match = str.match(/\/\/ Demo: (\w+)/)
       let demoTag = ''
       if (match) {
         const id = match[1]
-        code.push(...[
-          '<script type="text/babel">',
-          str,
-          '</script>'
-        ])
+        code.push(...['<script type="text/babel">', str, '</script>'])
         demoTag = ` data-demo="${id}"`
       }
       return [
@@ -34,7 +30,7 @@ const md = require('markdown-it')({
   }
 })
 
-function section (name, content) {
+function section(name, content) {
   return `<!--
 ####${'#'.repeat(name.length)}####
 ### ${name} ###
@@ -45,11 +41,14 @@ ${content}
 `
 }
 
-function postProcessMarkdown (html) {
-  const $ = cheerio.load('<body>' + twemoji.parse(html, {
-    folder: 'svg',
-    ext: '.svg'
-  }))
+function postProcessMarkdown(html) {
+  const $ = cheerio.load(
+    '<body>' +
+      twemoji.parse(html, {
+        folder: 'svg',
+        ext: '.svg'
+      })
+  )
   $('h1').addClass('yellow f-headline lh-solid mb0')
   $('h1 + p').addClass('f2 mt2')
   $('h2').addClass('yellow bt b--orange bw3 mt5 pt4 f1 lh-title')
@@ -58,14 +57,19 @@ function postProcessMarkdown (html) {
   $('a').addClass('light-pink')
   $('p > code, li > code').addClass('light-green')
   $('pre:not([class])').addClass('washed-green bg-dark-green pa3')
-  $('pre[data-demo]').each(function () {
+  $('pre[data-demo]').each(function() {
     const id = $(this).attr('data-demo')
-    $(this).before(section('Demo: ' + id, `
+    $(this).before(
+      section(
+        'Demo: ' + id,
+        `
       <article class="br3 hidden ba b--black-10 mv4">
         <h1 class="f4 bg-orange light-yellow br3 br--top mv0 pv2 ph3">Demo: ${id}</h1>
         <div class="pa3 bt bg-dark-gray b--white-10" id="${id}"></div>
       </article>
-    `))
+    `
+      )
+    )
   })
   return $('body').html()
 }
@@ -73,11 +77,15 @@ function postProcessMarkdown (html) {
 const unlines = a => a.join('\n')
 
 const readme = fs.readFileSync('README.md', 'utf8')
-const result = postProcessMarkdown(md.render(readme))
-  .replace('<!-- scripts -->', () => unlines([
-    section('Require scripts', `
-      <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-      <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+const result = postProcessMarkdown(md.render(readme)).replace(
+  '<!-- scripts -->',
+  () =>
+    unlines([
+      section(
+        'Require scripts',
+        `
+        <script crossorigin src="https://unpkg.com/react@16.7.0-alpha.0/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16.7.0-alpha.0/umd/react-dom.development.js"></script>
       <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
       <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
       <script>
@@ -91,14 +99,20 @@ const result = postProcessMarkdown(md.render(readme))
         };
         firebase.initializeApp(config);
       </script>
-      <script src="https://unpkg.com/fiery@0.0.2/umd/fiery.js"></script>
-    `),
-    section('UI kit', unlines([
-      '<script type="text/babel">',
-      fs.readFileSync('docs/UI.js', 'utf8'),
-      '</script>'
-    ]))
-  ]))
+      <!-- script src="https://unpkg.com/fiery@0.0.2/umd/fiery.js"></script -->
+      <script src="../umd/fiery.js"></script>
+    `
+      ),
+      section(
+        'UI kit',
+        unlines([
+          '<script type="text/babel">',
+          fs.readFileSync('docs/UI.js', 'utf8'),
+          '</script>'
+        ])
+      )
+    ])
+)
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -112,6 +126,8 @@ const html = `<!DOCTYPE html>
     pre, code, .mono { font-family: Cousine, monospace; }
     img.emoji { height: 1em; width: 1em; margin: 0 .05em 0 .1em; vertical-align: -0.1em; }
     ${fs.readFileSync('node_modules/prismjs/themes/prism-okaidia.css')}
+    .pulsate { animation: 1s pulsate infinite; }
+    @keyframes pulsate { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
   </style>
   <title>fiery</title>
 </head>
