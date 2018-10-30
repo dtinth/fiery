@@ -55,7 +55,8 @@ function postProcessMarkdown(html) {
   $('h3').addClass('gold mt5 f3 lh-title')
   $('strong').addClass('light-yellow')
   $('a').addClass('light-pink')
-  $('p > code, li > code').addClass('light-green')
+  $('p > code, li > code, td > code').addClass('light-green')
+  $('th, td').addClass('ba b--white-20 ph2')
   $('pre:not([class])').addClass('washed-green bg-dark-green pa3')
   $('pre[data-demo]').each(function() {
     const id = $(this).attr('data-demo')

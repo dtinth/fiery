@@ -12,7 +12,7 @@ npm install --save fiery
 
 ## Demo
 
-[Try it out!](https://dtinth.github.io/fiery/#GuestbookApp)
+[Try it out!](https://dtinth.github.io/fiery/#DistributedCounter)
 
 <!-- scripts -->
 
@@ -186,6 +186,15 @@ When loading data from remote sources, the data may not come immediately. In fie
 - `data` — The data of type **T**. May be `undefined` if `loading || failed`.
 - `error` — The **Error**. May be `undefined` if `!failed`.
 - `retry` — A **function** that may be called to retry the operation. May be `undefined` if `!failed || loading`.
+
+If you use TypeScript, our typings file can help preventing you from accessing the `data` in loading or failed state. Refer to this table.
+
+| `loading` | `failed` | `data`          | `error`     | `retry`      | Remarks      |
+| --------- | -------- | --------------- | ----------- | ------------ | ------------ |
+| `true`    | `false`  | `T | undefined` | `undefined` | `undefined`  | Initial load |
+| `true`    | `true`   | `T | undefined` | `Error`     | `undefined`  | Retrying     |
+| `false`   | `false`  | `T`             | `undefined` | `undefined`  | Completed    |
+| `false`   | `true`   | `T | undefined` | `Error`     | `() => void` | Error        |
 
 ### `fiery.useFirebaseAuth()`
 

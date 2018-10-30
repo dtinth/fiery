@@ -151,7 +151,7 @@ pre[class*="language-"] {
 <pre class="washed-green bg-dark-green pa3"><code>npm install --save fiery
 </code></pre>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Demo</h2>
-<p><a href="https://dtinth.github.io/fiery/#GuestbookApp" class="light-pink">Try it out!</a></p>
+<p><a href="https://dtinth.github.io/fiery/#DistributedCounter" class="light-pink">Try it out!</a></p>
 <!--
 #######################
 ### Require scripts ###
@@ -656,6 +656,53 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 <li><code class="light-green">error</code> &#x2014; The <strong class="light-yellow">Error</strong>. May be <code class="light-green">undefined</code> if <code class="light-green">!failed</code>.</li>
 <li><code class="light-green">retry</code> &#x2014; A <strong class="light-yellow">function</strong> that may be called to retry the operation. May be <code class="light-green">undefined</code> if <code class="light-green">!failed || loading</code>.</li>
 </ul>
+<p>If you use TypeScript, our typings file can help preventing you from accessing the <code class="light-green">data</code> in loading or failed state. Refer to this table.</p>
+<table>
+<thead>
+<tr>
+<th class="ba b--white-20 ph2"><code>loading</code></th>
+<th class="ba b--white-20 ph2"><code>failed</code></th>
+<th class="ba b--white-20 ph2"><code>data</code></th>
+<th class="ba b--white-20 ph2"><code>error</code></th>
+<th class="ba b--white-20 ph2"><code>retry</code></th>
+<th class="ba b--white-20 ph2">Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T | undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2">Initial load</td>
+</tr>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T | undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">Error</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2">Retrying</td>
+</tr>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2">Completed</td>
+</tr>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T | undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">Error</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">() =&gt; void</code></td>
+<td class="ba b--white-20 ph2">Error</td>
+</tr>
+</tbody>
+</table>
 <h3 class="gold mt5 f3 lh-title"><code>fiery.useFirebaseAuth()</code></h3>
 <p>Subscribe and use authentication state.</p>
 <ul>
