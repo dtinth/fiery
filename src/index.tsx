@@ -105,7 +105,15 @@ export function useFirebaseAuth() {
   return authState
 }
 
-export function useFirebaseDatabase(query: firebase.database.Query) {
+type TestInterface = {
+  simulateError?: (error: Error) => void
+}
+
+export function useFirebaseDatabase(
+  query: firebase.database.Query,
+  refTestInterface?: (testInterface: TestInterface | null) => void
+): DataState<any> {
+  const [testInterface] = useState<TestInterface>(() => ({}))
   const [dataState, setDataState] = useState<DataState<any>>(() => {
     return { loading: true, failed: false }
   })
@@ -129,6 +137,7 @@ export function useFirebaseDatabase(query: firebase.database.Query) {
         setDataState(receiveError(e, retry))
       }
       query.on('value', subscriber, onError)
+      testInterface.simulateError = e => onError(e)
       return () => {
         unsubscribed = true
 
@@ -139,6 +148,15 @@ export function useFirebaseDatabase(query: firebase.database.Query) {
       }
     },
     [query.toString(), retryCount]
+  )
+  useEffect(
+    () => {
+      if (refTestInterface) refTestInterface(testInterface)
+      return () => {
+        if (refTestInterface) refTestInterface(null)
+      }
+    },
+    [refTestInterface]
   )
   return dataState
 }

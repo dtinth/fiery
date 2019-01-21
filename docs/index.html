@@ -145,10 +145,14 @@ pre[class*="language-"] {
 -->
 <main class="mw7 pb5 center lh-copy">
 <h1 class="yellow f-headline lh-solid mb0">fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"></h1>
-<p class="f2 mt2">Some components to make it easy to use Firebase with React. It uses latest React features and patterns such as <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a> and <a href="https://reactjs.org/docs/hooks-intro.html" class="light-pink">hooks</a>.</p>
+<p class="f2 mt2">fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> is the quickest and easiest way to use <strong class="light-yellow">Firebase Authentication</strong> and <strong class="light-yellow">Firebase Realtime Database</strong> in a React app. It uses latest React features and patterns such as <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a> and <a href="https://reactjs.org/docs/hooks-intro.html" class="light-pink">hooks</a>.</p>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Installation</h2>
-<p>You can install fiery from npm:</p>
+<p>You can install fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> from npm:</p>
 <pre class="washed-green bg-dark-green pa3"><code>npm install --save fiery
+</code></pre>
+<p>A UMD version is also available:</p>
+<pre class="washed-green bg-dark-green pa3"><code>&lt;script src=&quot;https://unpkg.com/fiery@0.99.0/umd/fiery.js&quot;&gt;
+&lt;/script&gt;
 </code></pre>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Demo</h2>
 <p><a href="https://dtinth.github.io/fiery/#DistributedCounter" class="light-pink">Try it out!</a></p>
@@ -199,7 +203,7 @@ window.UI = (function() {
 
   function ErrorMessage({ error, retry }) {
     return (
-      <div className="pa2 bg-washed-red br2">
+      <div className="pa2 bg-washed-red br2 dark-red">
         <strong className="dark-red">Something went wrong!</strong>{' '}
         {String(error)}
         {!!retry && (
@@ -329,12 +333,19 @@ window.UI = (function() {
 <pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="DistributedCounter"><span class="token comment">// Demo: DistributedCounter</span>
 <span class="token comment">// This demo app uses only Stateless Functional Components!</span>
 
+<span class="token comment">// Normal Firebase stuff...</span>
+<span class="token comment">//</span>
 <span class="token keyword">const</span> counterRef <span class="token operator">=</span> firebase<span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/counter&apos;</span><span class="token punctuation">)</span>
 <span class="token keyword">const</span> <span class="token function-variable function">counterDecrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> counterRef<span class="token punctuation">.</span><span class="token function">transaction</span><span class="token punctuation">(</span>c <span class="token operator">=&gt;</span> c <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
 <span class="token keyword">const</span> <span class="token function-variable function">counterIncrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> counterRef<span class="token punctuation">.</span><span class="token function">transaction</span><span class="token punctuation">(</span>c <span class="token operator">=&gt;</span> c <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
 
 <span class="token keyword">function</span> <span class="token function">DistributedCounter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token comment">// Note: This is possible thanks to the Hooks API, introduced in React 16.7.0.</span>
+  <span class="token comment">// The `useFirebaseDatabase` hook makes this component automatically</span>
+  <span class="token comment">// subscribe to Firebase Realtime Database. When the data change,</span>
+  <span class="token comment">// this component is automatically re-rendered.</span>
+  <span class="token comment">//</span>
+  <span class="token comment">// This is possible thanks to the Hooks API, introduced in React 16.7.0-alpha.0.</span>
+  <span class="token comment">//</span>
   <span class="token keyword">const</span> counterState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>counterRef<span class="token punctuation">)</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> display<span class="token punctuation">:</span> <span class="token string">&apos;flex&apos;</span><span class="token punctuation">,</span> alignItems<span class="token punctuation">:</span> <span class="token string">&apos;center&apos;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
@@ -367,12 +378,19 @@ ReactDOM<span class="token punctuation">.</span><span class="token function">ren
 </pre><script type="text/babel">// Demo: DistributedCounter
 // This demo app uses only Stateless Functional Components!
 
+// Normal Firebase stuff...
+//
 const counterRef = firebase.database().ref('demos/counter')
 const counterDecrement = () => counterRef.transaction(c => c - 1)
 const counterIncrement = () => counterRef.transaction(c => c + 1)
 
 function DistributedCounter() {
-  // Note: This is possible thanks to the Hooks API, introduced in React 16.7.0.
+  // The `useFirebaseDatabase` hook makes this component automatically
+  // subscribe to Firebase Realtime Database. When the data change,
+  // this component is automatically re-rendered.
+  //
+  // This is possible thanks to the Hooks API, introduced in React 16.7.0-alpha.0.
+  //
   const counterState = fiery.useFirebaseDatabase(counterRef)
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -427,12 +445,16 @@ ReactDOM.render(
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// The navigation bar</span>
+<span class="token comment">/**
+ * The navigation bar
+ */</span>
 <span class="token keyword">function</span> <span class="token function">Nav</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar</span> <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>My Guestbook<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Contact<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
-      <span class="token punctuation">{</span><span class="token comment">/* Subscribe to the authentication state */</span><span class="token punctuation">}</span>
+      <span class="token punctuation">{</span><span class="token comment">/* Subscribe to the authentication state.
+          We use the Render Props technique to localize updates
+          to a single &lt;UI.NavBar.Item /&gt; component. */</span><span class="token punctuation">}</span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Auth</span><span class="token punctuation">&gt;</span></span>
         <span class="token punctuation">{</span><span class="token comment">/* Data is represented in 3 states: &apos;loading&apos;, &apos;completed&apos; and &apos;error&apos;.
             Use `fiery.unwrap` to handle all these 3 cases. */</span><span class="token punctuation">}</span>
@@ -461,6 +483,7 @@ ReactDOM.render(
 
 <span class="token comment">// The `signIn` and `signOut` functions uses the normal Firebase auth functions.</span>
 <span class="token comment">// No new APIs to learn here!</span>
+<span class="token comment">//</span>
 <span class="token keyword">function</span> <span class="token function">signIn</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   firebase
     <span class="token punctuation">.</span><span class="token function">auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -471,8 +494,14 @@ ReactDOM.render(
   <span class="token keyword">if</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span><span class="token function">confirm</span><span class="token punctuation">(</span><span class="token string">&apos;RLY SIGN OUT?&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> firebase<span class="token punctuation">.</span><span class="token function">auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">signOut</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// The guestbook entry list.</span>
+<span class="token comment">/**
+ * The list of guestbook entries.
+ */</span>
 <span class="token keyword">function</span> <span class="token function">GuestbookList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// The `useFirebaseDatabase` hook makes this component automatically</span>
+  <span class="token comment">// subscribe to Firebase Realtime Database. When the data change,</span>
+  <span class="token comment">// this component is automatically re-rendered.</span>
+  <span class="token comment">//</span>
   <span class="token keyword">const</span> guestbookState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>
     firebase
       <span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -502,8 +531,14 @@ ReactDOM.render(
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// The form to submit a guestbook entry.</span>
+<span class="token comment">/**
+ * The form to submit a guestbook entry.
+ */</span>
 <span class="token keyword">function</span> <span class="token function">GuestbookForm</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// The `useFirebaseAuth` hook makes this component automatically</span>
+  <span class="token comment">// subscribe to Firebase Authentication state. When user signs in</span>
+  <span class="token comment">// or signs out, this component will automatically update.</span>
+  <span class="token comment">//</span>
   <span class="token keyword">const</span> userState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseAuth</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
   <span class="token keyword">return</span> userState<span class="token punctuation">.</span>loading <span class="token operator">?</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token attr-name">message</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Checking authentication status&#x2026;<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
@@ -516,7 +551,8 @@ ReactDOM.render(
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// Write to Firebase Realtime Database using the familiar Firebase SDK APIs!</span>
+<span class="token comment">// Write to Firebase Realtime Database using the familiar Firebase SDK!</span>
+<span class="token comment">//</span>
 <span class="token keyword">function</span> <span class="token function">submitForm</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
   firebase
     <span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -528,7 +564,8 @@ ReactDOM.render(
     <span class="token punctuation">}</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// Render the app..</span>
+<span class="token comment">// Render the app...</span>
+<span class="token comment">//</span>
 ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>GuestbookApp</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;GuestbookApp&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 </pre><script type="text/babel">// Demo: GuestbookApp
 // This demo app uses only Stateless Functional Components!
@@ -542,12 +579,16 @@ function GuestbookApp() {
   )
 }
 
-// The navigation bar
+/**
+ * The navigation bar
+ */
 function Nav() {
   return (
     <UI.NavBar title="My Guestbook">
       <UI.NavBar.Item label="Contact" />
-      {/* Subscribe to the authentication state */}
+      {/* Subscribe to the authentication state.
+          We use the Render Props technique to localize updates
+          to a single <UI.NavBar.Item /> component. */}
       <fiery.Auth>
         {/* Data is represented in 3 states: 'loading', 'completed' and 'error'.
             Use `fiery.unwrap` to handle all these 3 cases. */}
@@ -576,6 +617,7 @@ function Nav() {
 
 // The `signIn` and `signOut` functions uses the normal Firebase auth functions.
 // No new APIs to learn here!
+//
 function signIn() {
   firebase
     .auth()
@@ -586,8 +628,14 @@ function signOut() {
   if (window.confirm('RLY SIGN OUT?')) firebase.auth().signOut()
 }
 
-// The guestbook entry list.
+/**
+ * The list of guestbook entries.
+ */
 function GuestbookList() {
+  // The `useFirebaseDatabase` hook makes this component automatically
+  // subscribe to Firebase Realtime Database. When the data change,
+  // this component is automatically re-rendered.
+  //
   const guestbookState = fiery.useFirebaseDatabase(
     firebase
       .database()
@@ -617,8 +665,14 @@ function GuestbookList() {
   )
 }
 
-// The form to submit a guestbook entry.
+/**
+ * The form to submit a guestbook entry.
+ */
 function GuestbookForm() {
+  // The `useFirebaseAuth` hook makes this component automatically
+  // subscribe to Firebase Authentication state. When user signs in
+  // or signs out, this component will automatically update.
+  //
   const userState = fiery.useFirebaseAuth()
   return userState.loading ? (
     <UI.Loading message="Checking authentication status…" />
@@ -631,7 +685,8 @@ function GuestbookForm() {
   )
 }
 
-// Write to Firebase Realtime Database using the familiar Firebase SDK APIs!
+// Write to Firebase Realtime Database using the familiar Firebase SDK!
+//
 function submitForm(text, user) {
   firebase
     .database()
@@ -643,10 +698,12 @@ function submitForm(text, user) {
     })
 }
 
-// Render the app..
+// Render the app...
+//
 ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 </script>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">API Usage</h2>
+<p>fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> provides both <a href="https://reactjs.org/hooks" class="light-pink">hooks</a>- and <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a>-based APIs (<a href="https://twitter.com/dtinth/status/1055874999377047553" class="light-pink">rationale</a>).</p>
 <h3 class="gold mt5 f3 lh-title"><code>fiery.DataState&lt;T&gt;</code> &#x2014; Representing remote data.</h3>
 <p>When loading data from remote sources, the data may not come immediately. In fiery, to represent this, we use a <code class="light-green">DataState&lt;T&gt;</code>, which is a plain JS object with these properties:</p>
 <ul>
@@ -729,6 +786,8 @@ It will be called with a <code class="light-green">RemoteDataState</code> wrappi
 <li><code class="light-green">children</code> &#x2014; A <strong class="light-yellow">function</strong> that determines how the data state should be rendered.
 It will be called with a <code class="light-green">fiery.DataState&lt;any&gt;</code> wrapping the data (if it exists) or <code class="light-green">null</code> otherwise.</li>
 </ul>
+<h3 class="gold mt5 f3 lh-title">Looking for Firebase Firestore bindings?</h3>
+<p>Please contribute!</p>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Development</h2>
 <p>This project uses Yarn.</p>
 <h3 class="gold mt5 f3 lh-title">Dependencies</h3>

@@ -13,7 +13,7 @@ window.UI = (function() {
 
   function ErrorMessage({ error, retry }) {
     return (
-      <div className="pa2 bg-washed-red br2">
+      <div className="pa2 bg-washed-red br2 dark-red">
         <strong className="dark-red">Something went wrong!</strong>{' '}
         {String(error)}
         {!!retry && (

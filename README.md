@@ -1,13 +1,20 @@
 # fiery 🔥
 
-Some components to make it easy to use Firebase with React. It uses latest React features and patterns such as [render props](https://reactjs.org/docs/render-props.html) and [hooks](https://reactjs.org/docs/hooks-intro.html).
+fiery 🔥 is the quickest and easiest way to use **Firebase Authentication** and **Firebase Realtime Database** in a React app. It uses latest React features and patterns such as [render props](https://reactjs.org/docs/render-props.html) and [hooks](https://reactjs.org/docs/hooks-intro.html).
 
 ## Installation
 
-You can install fiery from npm:
+You can install fiery 🔥 from npm:
 
 ```
 npm install --save fiery
+```
+
+A UMD version is also available:
+
+```
+<script src="https://unpkg.com/fiery@0.99.0/umd/fiery.js">
+</script>
 ```
 
 ## Demo
@@ -20,12 +27,19 @@ npm install --save fiery
 // Demo: DistributedCounter
 // This demo app uses only Stateless Functional Components!
 
+// Normal Firebase stuff...
+//
 const counterRef = firebase.database().ref('demos/counter')
 const counterDecrement = () => counterRef.transaction(c => c - 1)
 const counterIncrement = () => counterRef.transaction(c => c + 1)
 
 function DistributedCounter() {
-  // Note: This is possible thanks to the Hooks API, introduced in React 16.7.0.
+  // The `useFirebaseDatabase` hook makes this component automatically
+  // subscribe to Firebase Realtime Database. When the data change,
+  // this component is automatically re-rendered.
+  //
+  // This is possible thanks to the Hooks API, introduced in React 16.7.0-alpha.0.
+  //
   const counterState = fiery.useFirebaseDatabase(counterRef)
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -70,12 +84,16 @@ function GuestbookApp() {
   )
 }
 
-// The navigation bar
+/**
+ * The navigation bar
+ */
 function Nav() {
   return (
     <UI.NavBar title="My Guestbook">
       <UI.NavBar.Item label="Contact" />
-      {/* Subscribe to the authentication state */}
+      {/* Subscribe to the authentication state.
+          We use the Render Props technique to localize updates
+          to a single <UI.NavBar.Item /> component. */}
       <fiery.Auth>
         {/* Data is represented in 3 states: 'loading', 'completed' and 'error'.
             Use `fiery.unwrap` to handle all these 3 cases. */}
@@ -104,6 +122,7 @@ function Nav() {
 
 // The `signIn` and `signOut` functions uses the normal Firebase auth functions.
 // No new APIs to learn here!
+//
 function signIn() {
   firebase
     .auth()
@@ -114,8 +133,14 @@ function signOut() {
   if (window.confirm('RLY SIGN OUT?')) firebase.auth().signOut()
 }
 
-// The guestbook entry list.
+/**
+ * The list of guestbook entries.
+ */
 function GuestbookList() {
+  // The `useFirebaseDatabase` hook makes this component automatically
+  // subscribe to Firebase Realtime Database. When the data change,
+  // this component is automatically re-rendered.
+  //
   const guestbookState = fiery.useFirebaseDatabase(
     firebase
       .database()
@@ -145,8 +170,14 @@ function GuestbookList() {
   )
 }
 
-// The form to submit a guestbook entry.
+/**
+ * The form to submit a guestbook entry.
+ */
 function GuestbookForm() {
+  // The `useFirebaseAuth` hook makes this component automatically
+  // subscribe to Firebase Authentication state. When user signs in
+  // or signs out, this component will automatically update.
+  //
   const userState = fiery.useFirebaseAuth()
   return userState.loading ? (
     <UI.Loading message="Checking authentication status…" />
@@ -159,7 +190,8 @@ function GuestbookForm() {
   )
 }
 
-// Write to Firebase Realtime Database using the familiar Firebase SDK APIs!
+// Write to Firebase Realtime Database using the familiar Firebase SDK!
+//
 function submitForm(text, user) {
   firebase
     .database()
@@ -171,11 +203,14 @@ function submitForm(text, user) {
     })
 }
 
-// Render the app..
+// Render the app...
+//
 ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 ```
 
 ## API Usage
+
+fiery 🔥 provides both [hooks](https://reactjs.org/hooks)- and [render props](https://reactjs.org/docs/render-props.html)-based APIs ([rationale](https://twitter.com/dtinth/status/1055874999377047553)).
 
 ### `fiery.DataState<T>` — Representing remote data.
 
@@ -227,6 +262,10 @@ Takes two props:
 - `dataRef` — A [`firebase.database.Reference`](https://firebase.google.com/docs/reference/js/firebase.database.Reference) representing the data reference to fetch.
 - `children` — A **function** that determines how the data state should be rendered.
   It will be called with a `fiery.DataState<any>` wrapping the data (if it exists) or `null` otherwise.
+
+### Looking for Firebase Firestore bindings?
+
+Please contribute!
 
 ## Development
 
