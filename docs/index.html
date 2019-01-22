@@ -106,7 +106,8 @@ pre[class*="language-"] {
 
 .token.atrule,
 .token.attr-value,
-.token.function {
+.token.function,
+.token.class-name {
 	color: #e6db74;
 }
 
@@ -131,6 +132,8 @@ pre[class*="language-"] {
 	cursor: help;
 }
 
+    .pulsate { animation: 1s pulsate infinite; }
+    @keyframes pulsate { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
   </style>
   <title>fiery</title>
 </head>
@@ -142,21 +145,25 @@ pre[class*="language-"] {
 -->
 <main class="mw7 pb5 center lh-copy">
 <h1 class="yellow f-headline lh-solid mb0">fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"></h1>
-<p class="f2 mt2">Some components to make it easy to use Firebase with React.</p>
+<p class="f2 mt2">fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> is the quickest and easiest way to use <strong class="light-yellow">Firebase Authentication</strong> and <strong class="light-yellow">Firebase Realtime Database</strong> in a React app. It uses latest React features and patterns such as <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a> and <a href="https://reactjs.org/docs/hooks-intro.html" class="light-pink">hooks</a>.</p>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Installation</h2>
-<p>You can install fiery from npm:</p>
+<p>You can install fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> from npm:</p>
 <pre class="washed-green bg-dark-green pa3"><code>npm install --save fiery
 </code></pre>
+<p>A UMD version is also available:</p>
+<pre class="washed-green bg-dark-green pa3"><code>&lt;script src=&quot;https://unpkg.com/fiery@0.99.0/umd/fiery.js&quot;&gt;
+&lt;/script&gt;
+</code></pre>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Demo</h2>
-<p><a href="https://dtinth.github.io/fiery/#GuestbookApp" class="light-pink">Try it out!</a></p>
+<p><a href="https://dtinth.github.io/fiery/#DistributedCounter" class="light-pink">Try it out!</a></p>
 <!--
 #######################
 ### Require scripts ###
 #######################
 -->
 
-      <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
-      <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react@16.7.0-alpha.0/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16.7.0-alpha.0/umd/react-dom.development.js"></script>
       <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
       <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
       <script>
@@ -170,7 +177,8 @@ pre[class*="language-"] {
         };
         firebase.initializeApp(config);
       </script>
-      <script src="https://unpkg.com/fiery@0.0.2/umd/fiery.js"></script>
+      <!-- script src="https://unpkg.com/fiery@0.0.2/umd/fiery.js"></script -->
+      <script src="../umd/fiery.js"></script>
     
 
 
@@ -180,12 +188,12 @@ pre[class*="language-"] {
 ##############
 -->
 <script type="text/babel">
-window.UI = (function () {
-  function Button ({ children, onClick }) {
+window.UI = (function() {
+  function Button({ children, onClick }) {
     return (
       <a
-        className='f6 link dim br2 ph3 pv2 dib white bg-dark-blue'
-        href='javascript://'
+        className="f6 link dim br2 ph3 pv2 dib white bg-dark-blue"
+        href="javascript://"
         onClick={onClick}
       >
         {children}
@@ -193,53 +201,56 @@ window.UI = (function () {
     )
   }
 
-  function ErrorMessage ({ error, retry }) {
+  function ErrorMessage({ error, retry }) {
     return (
-      <div className='pa2 bg-washed-red br2'>
-        <strong className='dark-red'>Something went wrong!</strong> {String(error)}
-        {!!retry && <div><Button onClick={retry}>Retry</Button></div>}
+      <div className="pa2 bg-washed-red br2 dark-red">
+        <strong className="dark-red">Something went wrong!</strong>{' '}
+        {String(error)}
+        {!!retry && (
+          <div>
+            <Button onClick={retry}>Retry</Button>
+          </div>
+        )}
       </div>
     )
   }
 
-  function Loading ({ message }) {
+  function Loading({ message }) {
     return (
-      <div>
+      <div className="pulsate">
         <em>{message}</em>
       </div>
     )
   }
 
-  function AuthenticationWall ({ onSignIn }) {
+  function AuthenticationWall({ onSignIn }) {
     return (
-      <div className='pa3 tc bg-white-10'>
-        <strong className='db mb2'>Sign in to write on this guestbook</strong>
+      <div className="pa3 tc bg-white-10">
+        <strong className="db mb2">Sign in to write on this guestbook</strong>
         <Button onClick={onSignIn}>Sign in with GitHub</Button>
       </div>
     )
   }
 
-  function NavBar ({ title, children }) {
+  function NavBar({ title, children }) {
     return (
-      <nav className='dt w-100 border-box pa2 ph3 bg-purple'>
-        <a className='dtc v-mid white-60 link dim w-25' href='#' title='Home'>
+      <nav className="dt w-100 border-box pa2 ph3 bg-purple">
+        <a className="dtc v-mid white-60 link dim w-25" href="#" title="Home">
           {title}
         </a>
-        <div className='dtc v-mid w-75 tr'>
-          {children}
-        </div>
+        <div className="dtc v-mid w-75 tr">{children}</div>
       </nav>
     )
   }
 
-  NavBar.Item = function NavBarItem ({ label, onClick, disabled, title }) {
+  NavBar.Item = function NavBarItem({ label, onClick, disabled, title }) {
     if (disabled) {
-      return <span className='white-40 f6 f5-ns dib ml3'>{label}</span>
+      return <span className="white-40 f6 f5-ns dib ml3">{label}</span>
     }
     return (
       <a
-        className='link dim white-70 f6 f5-ns dib ml3'
-        href='javascript://'
+        className="link dim white-70 f6 f5-ns dib ml3"
+        href="javascript://"
         title={title}
         onClick={onClick}
       >
@@ -248,29 +259,39 @@ window.UI = (function () {
     )
   }
 
-  function EntryList ({ children }) {
+  function EntryList({ children }) {
+    return <div className="pa3 bg-black-50">{children}</div>
+  }
+  EntryList.Item = function EntryListItem({ text, name }) {
     return (
-      <div className='pa3 bg-black-50'>
-        {children}
+      <div>
+        <strong>{name}: </strong>
+        {text}
       </div>
     )
-  }
-  EntryList.Item = function EntryListItem ({ text, name }) {
-    return <div><strong>{name}: </strong>{text}</div>
   }
 
-  function GuestbookInputField () {
+  function GuestbookInputField() {
     return (
-      <div className='cf'>
-        <input className='f6 f5-l input-reset bn fl black-80 bg-white pa3 lh-solid w-100 w-75-m w-80-l br2-ns br--left-ns sans-serif' placeholder='What’s on your mind?' type='text' name='text' />
-        <input className='f6 f5-l button-reset fl pv3 tc bn bg-animate bg-black-70 hover-bg-black white pointer w-100 w-25-m w-20-l br2-ns br--right-ns sans-serif' type='submit' value='Send' />
+      <div className="cf">
+        <input
+          className="f6 f5-l input-reset bn fl black-80 bg-white pa3 lh-solid w-100 w-75-m w-80-l br2-ns br--left-ns sans-serif"
+          placeholder="What’s on your mind?"
+          type="text"
+          name="text"
+        />
+        <input
+          className="f6 f5-l button-reset fl pv3 tc bn bg-animate bg-black-70 hover-bg-black white pointer w-100 w-25-m w-20-l br2-ns br--right-ns sans-serif"
+          type="submit"
+          value="Send"
+        />
       </div>
     )
   }
-  function EntryForm ({ onSend }) {
+  function EntryForm({ onSend }) {
     return (
       <form
-        className='bg-white-10 pa3'
+        className="bg-white-10 pa3"
         onSubmit={e => {
           const text = e.target.text.value
           e.target.text.value = ''
@@ -298,6 +319,109 @@ window.UI = (function () {
 
 
 <!--
+################################
+### Demo: DistributedCounter ###
+################################
+-->
+
+      <article class="br3 hidden ba b--black-10 mv4">
+        <h1 class="f4 bg-orange light-yellow br3 br--top mv0 pv2 ph3">Demo: DistributedCounter</h1>
+        <div class="pa3 bt bg-dark-gray b--white-10" id="DistributedCounter"></div>
+      </article>
+    
+
+<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="DistributedCounter"><span class="token comment">// Demo: DistributedCounter</span>
+<span class="token comment">// This demo app uses only Stateless Functional Components!</span>
+
+<span class="token comment">// Normal Firebase stuff...</span>
+<span class="token comment">//</span>
+<span class="token keyword">const</span> counterRef <span class="token operator">=</span> firebase<span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/counter&apos;</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> <span class="token function-variable function">counterDecrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> counterRef<span class="token punctuation">.</span><span class="token function">transaction</span><span class="token punctuation">(</span>c <span class="token operator">=&gt;</span> c <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> <span class="token function-variable function">counterIncrement</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> counterRef<span class="token punctuation">.</span><span class="token function">transaction</span><span class="token punctuation">(</span>c <span class="token operator">=&gt;</span> c <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+
+<span class="token keyword">function</span> <span class="token function">DistributedCounter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// The `useFirebaseDatabase` hook makes this component automatically</span>
+  <span class="token comment">// subscribe to Firebase Realtime Database. When the data change,</span>
+  <span class="token comment">// this component is automatically re-rendered.</span>
+  <span class="token comment">//</span>
+  <span class="token comment">// This is possible thanks to the Hooks API, introduced in React 16.7.0-alpha.0.</span>
+  <span class="token comment">//</span>
+  <span class="token keyword">const</span> counterState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>counterRef<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> display<span class="token punctuation">:</span> <span class="token string">&apos;flex&apos;</span><span class="token punctuation">,</span> alignItems<span class="token punctuation">:</span> <span class="token string">&apos;center&apos;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Button</span> <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterDecrement<span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span><span class="token operator">-</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>UI.Button</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">style</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span> textAlign<span class="token punctuation">:</span> <span class="token string">&apos;center&apos;</span><span class="token punctuation">,</span> margin<span class="token punctuation">:</span> <span class="token string">&apos;0 auto&apos;</span> <span class="token punctuation">}</span><span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>loading <span class="token operator">?</span> <span class="token punctuation">(</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token attr-name">message</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Loading counter value<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token punctuation">)</span> <span class="token punctuation">:</span> counterState<span class="token punctuation">.</span>failed <span class="token operator">?</span> <span class="token punctuation">(</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorMessage</span>
+            <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>error<span class="token punctuation">}</span></span>
+            <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>retry<span class="token punctuation">}</span></span>
+          <span class="token punctuation">/&gt;</span></span>
+        <span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token punctuation">(</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>strong</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>data<span class="token punctuation">}</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>strong</span><span class="token punctuation">&gt;</span></span>
+        <span class="token punctuation">)</span><span class="token punctuation">}</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Button</span> <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterIncrement<span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span><span class="token operator">+</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>UI.Button</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>DistributedCounter</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span>
+  document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;DistributedCounter&apos;</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+</pre><script type="text/babel">// Demo: DistributedCounter
+// This demo app uses only Stateless Functional Components!
+
+// Normal Firebase stuff...
+//
+const counterRef = firebase.database().ref('demos/counter')
+const counterDecrement = () => counterRef.transaction(c => c - 1)
+const counterIncrement = () => counterRef.transaction(c => c + 1)
+
+function DistributedCounter() {
+  // The `useFirebaseDatabase` hook makes this component automatically
+  // subscribe to Firebase Realtime Database. When the data change,
+  // this component is automatically re-rendered.
+  //
+  // This is possible thanks to the Hooks API, introduced in React 16.7.0-alpha.0.
+  //
+  const counterState = fiery.useFirebaseDatabase(counterRef)
+  return (
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div>
+        <UI.Button onClick={counterDecrement}>-</UI.Button>
+      </div>
+      <div style={{ textAlign: 'center', margin: '0 auto' }}>
+        {counterState.loading ? (
+          <UI.Loading message="Loading counter value" />
+        ) : counterState.failed ? (
+          <UI.ErrorMessage
+            error={counterState.error}
+            retry={counterState.retry}
+          />
+        ) : (
+          <strong>{counterState.data}</strong>
+        )}
+      </div>
+      <div>
+        <UI.Button onClick={counterIncrement}>+</UI.Button>
+      </div>
+    </div>
+  )
+}
+
+ReactDOM.render(
+  <DistributedCounter />,
+  document.getElementById('DistributedCounter')
+)
+</script>
+<!--
 ##########################
 ### Demo: GuestbookApp ###
 ##########################
@@ -311,7 +435,7 @@ window.UI = (function () {
 
 <pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="GuestbookApp"><span class="token comment">// Demo: GuestbookApp</span>
 <span class="token comment">// This demo app uses only Stateless Functional Components!</span>
-<span class="token keyword">function</span> <span class="token function">GuestbookApp</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token keyword">function</span> <span class="token function">GuestbookApp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>section</span><span class="token punctuation">&gt;</span></span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Nav</span> <span class="token punctuation">/&gt;</span></span>
@@ -321,37 +445,37 @@ window.UI = (function () {
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// The navigation bar</span>
-<span class="token keyword">function</span> <span class="token function">Nav</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token comment">/**
+ * The navigation bar
+ */</span>
+<span class="token keyword">function</span> <span class="token function">Nav</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar</span> <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&apos;</span>My Guestbook<span class="token punctuation">&apos;</span></span><span class="token punctuation">&gt;</span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&apos;</span>Contact<span class="token punctuation">&apos;</span></span> <span class="token punctuation">/&gt;</span></span>
-      <span class="token punctuation">{</span><span class="token comment">/* Subscribe to the authentication state */</span><span class="token punctuation">}</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar</span> <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>My Guestbook<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Contact<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+      <span class="token punctuation">{</span><span class="token comment">/* Subscribe to the authentication state.
+          We use the Render Props technique to localize updates
+          to a single &lt;UI.NavBar.Item /&gt; component. */</span><span class="token punctuation">}</span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Auth</span><span class="token punctuation">&gt;</span></span>
         <span class="token punctuation">{</span><span class="token comment">/* Data is represented in 3 states: &apos;loading&apos;, &apos;completed&apos; and &apos;error&apos;.
             Use `fiery.unwrap` to handle all these 3 cases. */</span><span class="token punctuation">}</span>
-        <span class="token punctuation">{</span><span class="token punctuation">(</span>authState<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> fiery<span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span>authState<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-          loading<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&apos;</span>Checking auth&#x2026;<span class="token punctuation">&apos;</span></span> <span class="token attr-name">disabled</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span>
-          completed<span class="token punctuation">:</span> <span class="token punctuation">(</span>user<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-            user <span class="token operator">?</span> <span class="token punctuation">(</span>
-              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span>
-                <span class="token attr-name">label</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token string">&apos;Sign Out (&apos;</span> <span class="token operator">+</span> user<span class="token punctuation">.</span>displayName <span class="token operator">+</span> <span class="token string">&apos;)&apos;</span><span class="token punctuation">}</span></span>
-                <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>signOut<span class="token punctuation">}</span></span>
-              <span class="token punctuation">/&gt;</span></span>
-            <span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token punctuation">(</span>
-              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span>
-                <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&apos;</span>Sign in with GitHub<span class="token punctuation">&apos;</span></span>
-                <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>signIn<span class="token punctuation">}</span></span>
-              <span class="token punctuation">/&gt;</span></span>
-            <span class="token punctuation">)</span><span class="token punctuation">,</span>
-          error<span class="token punctuation">:</span> <span class="token punctuation">(</span>error<span class="token punctuation">,</span> retry<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
+        <span class="token punctuation">{</span>authState <span class="token operator">=&gt;</span>
+          authState<span class="token punctuation">.</span>loading <span class="token operator">?</span> <span class="token punctuation">(</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Checking auth&#x2026;<span class="token punctuation">&quot;</span></span> <span class="token attr-name">disabled</span> <span class="token punctuation">/&gt;</span></span>
+          <span class="token punctuation">)</span> <span class="token punctuation">:</span> authState<span class="token punctuation">.</span>failed <span class="token operator">?</span> <span class="token punctuation">(</span>
             <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span>
-              <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&apos;</span>Auth checking failed<span class="token punctuation">&apos;</span></span>
-              <span class="token attr-name">title</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token function">String</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">&apos; (click to retry)&apos;</span><span class="token punctuation">}</span></span>
-              <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>retry<span class="token punctuation">}</span></span>
+              <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Auth checking failed<span class="token punctuation">&quot;</span></span>
+              <span class="token attr-name">title</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token function">String</span><span class="token punctuation">(</span>authState<span class="token punctuation">.</span>error<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">&apos; (click to retry)&apos;</span><span class="token punctuation">}</span></span>
+              <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>authState<span class="token punctuation">.</span>retry<span class="token punctuation">}</span></span>
             <span class="token punctuation">/&gt;</span></span>
-        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+          <span class="token punctuation">)</span> <span class="token punctuation">:</span> authState<span class="token punctuation">.</span>data <span class="token operator">?</span> <span class="token punctuation">(</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span>
+              <span class="token attr-name">label</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token string">&apos;Sign Out (&apos;</span> <span class="token operator">+</span> authState<span class="token punctuation">.</span>data<span class="token punctuation">.</span>displayName <span class="token operator">+</span> <span class="token string">&apos;)&apos;</span><span class="token punctuation">}</span></span>
+              <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>signOut<span class="token punctuation">}</span></span>
+            <span class="token punctuation">/&gt;</span></span>
+          <span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token punctuation">(</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Sign in with GitHub<span class="token punctuation">&quot;</span></span> <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>signIn<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
+          <span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fiery.Auth</span><span class="token punctuation">&gt;</span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>UI.NavBar</span><span class="token punctuation">&gt;</span></span>
   <span class="token punctuation">)</span>
@@ -359,78 +483,93 @@ window.UI = (function () {
 
 <span class="token comment">// The `signIn` and `signOut` functions uses the normal Firebase auth functions.</span>
 <span class="token comment">// No new APIs to learn here!</span>
-<span class="token keyword">function</span> <span class="token function">signIn</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  firebase<span class="token punctuation">.</span><span class="token function">auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">signInWithPopup</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">firebase<span class="token punctuation">.</span>auth<span class="token punctuation">.</span>GithubAuthProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">//</span>
+<span class="token keyword">function</span> <span class="token function">signIn</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  firebase
+    <span class="token punctuation">.</span><span class="token function">auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">signInWithPopup</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">firebase<span class="token punctuation">.</span>auth<span class="token punctuation">.</span>GithubAuthProvider</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token punctuation">.</span><span class="token keyword">catch</span><span class="token punctuation">(</span>e <span class="token operator">=&gt;</span> window<span class="token punctuation">.</span><span class="token function">alert</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`Sorry, cannot sign in! </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>e<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
-<span class="token keyword">function</span> <span class="token function">signOut</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token keyword">function</span> <span class="token function">signOut</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span><span class="token function">confirm</span><span class="token punctuation">(</span><span class="token string">&apos;RLY SIGN OUT?&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> firebase<span class="token punctuation">.</span><span class="token function">auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">signOut</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// The guestbook entry list.</span>
-<span class="token keyword">function</span> <span class="token function">GuestbookList</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> dataRef <span class="token operator">=</span> firebase<span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/guestbook&apos;</span><span class="token punctuation">)</span>
-    <span class="token punctuation">.</span><span class="token function">orderByKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">.</span><span class="token function">limitToLast</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
-
+<span class="token comment">/**
+ * The list of guestbook entries.
+ */</span>
+<span class="token keyword">function</span> <span class="token function">GuestbookList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// The `useFirebaseDatabase` hook makes this component automatically</span>
+  <span class="token comment">// subscribe to Firebase Realtime Database. When the data change,</span>
+  <span class="token comment">// this component is automatically re-rendered.</span>
+  <span class="token comment">//</span>
+  <span class="token keyword">const</span> guestbookState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>
+    firebase
+      <span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/guestbook&apos;</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">orderByKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">limitToLast</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.EntryList</span><span class="token punctuation">&gt;</span></span>
-      <span class="token punctuation">{</span><span class="token comment">/* Subscribe to Firebase Realtime Database */</span><span class="token punctuation">}</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Data</span> <span class="token attr-name">dataRef</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>dataRef<span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
-        <span class="token punctuation">{</span><span class="token punctuation">(</span>guestbookState<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> fiery<span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span>guestbookState<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-          loading<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token attr-name">message</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&apos;</span>Loading messages&#x2026;<span class="token punctuation">&apos;</span></span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span>
-          completed<span class="token punctuation">:</span> <span class="token punctuation">(</span>guestbook<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-            Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>guestbook<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>key <span class="token operator">=&gt;</span>
-              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.EntryList.Item</span>
-                <span class="token attr-name">key</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>key<span class="token punctuation">}</span></span>
-                <span class="token attr-name">text</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>guestbook<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>text<span class="token punctuation">}</span></span>
-                <span class="token attr-name">name</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>guestbook<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>name<span class="token punctuation">}</span></span>
-              <span class="token punctuation">/&gt;</span></span>
-            <span class="token punctuation">)</span><span class="token punctuation">,</span>
-          error<span class="token punctuation">:</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorMessage</span> <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>error<span class="token punctuation">}</span></span> <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>retry<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
-        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fiery.Data</span><span class="token punctuation">&gt;</span></span>
+      <span class="token punctuation">{</span>guestbookState<span class="token punctuation">.</span>loading <span class="token operator">?</span> <span class="token punctuation">(</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token attr-name">message</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Loading messages&#x2026;<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+      <span class="token punctuation">)</span> <span class="token punctuation">:</span> guestbookState<span class="token punctuation">.</span>failed <span class="token operator">?</span> <span class="token punctuation">(</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorMessage</span>
+          <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>guestbookState<span class="token punctuation">.</span>error<span class="token punctuation">}</span></span>
+          <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>guestbookState<span class="token punctuation">.</span>retry<span class="token punctuation">}</span></span>
+        <span class="token punctuation">/&gt;</span></span>
+      <span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token punctuation">(</span>
+        Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>guestbookState<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>key <span class="token operator">=&gt;</span> <span class="token punctuation">(</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.EntryList.Item</span>
+            <span class="token attr-name">key</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>key<span class="token punctuation">}</span></span>
+            <span class="token attr-name">text</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>guestbookState<span class="token punctuation">.</span>data<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>text<span class="token punctuation">}</span></span>
+            <span class="token attr-name">name</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>guestbookState<span class="token punctuation">.</span>data<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>name<span class="token punctuation">}</span></span>
+          <span class="token punctuation">/&gt;</span></span>
+        <span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token punctuation">)</span><span class="token punctuation">}</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>UI.EntryList</span><span class="token punctuation">&gt;</span></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// The form to submit a guestbook entry.</span>
-<span class="token keyword">function</span> <span class="token function">GuestbookForm</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token punctuation">(</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Auth</span><span class="token punctuation">&gt;</span></span>
-      <span class="token punctuation">{</span>userState <span class="token operator">=&gt;</span> fiery<span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span>userState<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-        loading<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token attr-name">message</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&apos;</span>Checking authentication status&#x2026;<span class="token punctuation">&apos;</span></span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span>
-        completed<span class="token punctuation">:</span> <span class="token punctuation">(</span>user<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-          user <span class="token operator">?</span> <span class="token punctuation">(</span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.EntryForm</span> <span class="token attr-name">onSend</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">submitForm</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> user<span class="token punctuation">)</span><span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
-          <span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token punctuation">(</span>
-            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.AuthenticationWall</span> <span class="token attr-name">onSignIn</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>signIn<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
-          <span class="token punctuation">)</span><span class="token punctuation">,</span>
-        error<span class="token punctuation">:</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorMessage</span> <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>error<span class="token punctuation">}</span></span> <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>retry<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
-      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fiery.Auth</span><span class="token punctuation">&gt;</span></span>
+<span class="token comment">/**
+ * The form to submit a guestbook entry.
+ */</span>
+<span class="token keyword">function</span> <span class="token function">GuestbookForm</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// The `useFirebaseAuth` hook makes this component automatically</span>
+  <span class="token comment">// subscribe to Firebase Authentication state. When user signs in</span>
+  <span class="token comment">// or signs out, this component will automatically update.</span>
+  <span class="token comment">//</span>
+  <span class="token keyword">const</span> userState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseAuth</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> userState<span class="token punctuation">.</span>loading <span class="token operator">?</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token attr-name">message</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Checking authentication status&#x2026;<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token punctuation">)</span> <span class="token punctuation">:</span> userState<span class="token punctuation">.</span>failed <span class="token operator">?</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorMessage</span> <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>userState<span class="token punctuation">.</span>error<span class="token punctuation">}</span></span> <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>userState<span class="token punctuation">.</span>retry<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token punctuation">)</span> <span class="token punctuation">:</span> userState<span class="token punctuation">.</span>data <span class="token operator">?</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.EntryForm</span> <span class="token attr-name">onSend</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>text <span class="token operator">=&gt;</span> <span class="token function">submitForm</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> userState<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.AuthenticationWall</span> <span class="token attr-name">onSignIn</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>signIn<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// Write to Firebase Realtime Database using the familiar Firebase SDK APIs!</span>
-<span class="token keyword">function</span> <span class="token function">submitForm</span> <span class="token punctuation">(</span>text<span class="token punctuation">,</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  firebase<span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/guestbook&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-    time<span class="token punctuation">:</span> firebase<span class="token punctuation">.</span>database<span class="token punctuation">.</span>ServerValue<span class="token punctuation">.</span>TIMESTAMP<span class="token punctuation">,</span>
-    name<span class="token punctuation">:</span> user<span class="token punctuation">.</span>displayName<span class="token punctuation">,</span>
-    text<span class="token punctuation">:</span> text
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment">// Write to Firebase Realtime Database using the familiar Firebase SDK!</span>
+<span class="token comment">//</span>
+<span class="token keyword">function</span> <span class="token function">submitForm</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  firebase
+    <span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/guestbook&apos;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      time<span class="token punctuation">:</span> firebase<span class="token punctuation">.</span>database<span class="token punctuation">.</span>ServerValue<span class="token punctuation">.</span><span class="token constant">TIMESTAMP</span><span class="token punctuation">,</span>
+      name<span class="token punctuation">:</span> user<span class="token punctuation">.</span>displayName<span class="token punctuation">,</span>
+      text<span class="token punctuation">:</span> text
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">// Render the app..</span>
+<span class="token comment">// Render the app...</span>
+<span class="token comment">//</span>
 ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>GuestbookApp</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;GuestbookApp&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 </pre><script type="text/babel">// Demo: GuestbookApp
 // This demo app uses only Stateless Functional Components!
-function GuestbookApp () {
+function GuestbookApp() {
   return (
     <section>
       <Nav />
@@ -440,37 +579,37 @@ function GuestbookApp () {
   )
 }
 
-// The navigation bar
-function Nav () {
+/**
+ * The navigation bar
+ */
+function Nav() {
   return (
-    <UI.NavBar title='My Guestbook'>
-      <UI.NavBar.Item label='Contact' />
-      {/* Subscribe to the authentication state */}
+    <UI.NavBar title="My Guestbook">
+      <UI.NavBar.Item label="Contact" />
+      {/* Subscribe to the authentication state.
+          We use the Render Props technique to localize updates
+          to a single <UI.NavBar.Item /> component. */}
       <fiery.Auth>
         {/* Data is represented in 3 states: 'loading', 'completed' and 'error'.
             Use `fiery.unwrap` to handle all these 3 cases. */}
-        {(authState) => fiery.unwrap(authState, {
-          loading: () =>
-            <UI.NavBar.Item label='Checking auth…' disabled />,
-          completed: (user) =>
-            user ? (
-              <UI.NavBar.Item
-                label={'Sign Out (' + user.displayName + ')'}
-                onClick={signOut}
-              />
-            ) : (
-              <UI.NavBar.Item
-                label='Sign in with GitHub'
-                onClick={signIn}
-              />
-            ),
-          error: (error, retry) =>
+        {authState =>
+          authState.loading ? (
+            <UI.NavBar.Item label="Checking auth…" disabled />
+          ) : authState.failed ? (
             <UI.NavBar.Item
-              label='Auth checking failed'
-              title={String(error) + ' (click to retry)'}
-              onClick={retry}
+              label="Auth checking failed"
+              title={String(authState.error) + ' (click to retry)'}
+              onClick={authState.retry}
             />
-        })}
+          ) : authState.data ? (
+            <UI.NavBar.Item
+              label={'Sign Out (' + authState.data.displayName + ')'}
+              onClick={signOut}
+            />
+          ) : (
+            <UI.NavBar.Item label="Sign in with GitHub" onClick={signIn} />
+          )
+        }
       </fiery.Auth>
     </UI.NavBar>
   )
@@ -478,118 +617,177 @@ function Nav () {
 
 // The `signIn` and `signOut` functions uses the normal Firebase auth functions.
 // No new APIs to learn here!
-function signIn () {
-  firebase.auth().signInWithPopup(new firebase.auth.GithubAuthProvider())
+//
+function signIn() {
+  firebase
+    .auth()
+    .signInWithPopup(new firebase.auth.GithubAuthProvider())
     .catch(e => window.alert(`Sorry, cannot sign in! ${e}`))
 }
-function signOut () {
+function signOut() {
   if (window.confirm('RLY SIGN OUT?')) firebase.auth().signOut()
 }
 
-// The guestbook entry list.
-function GuestbookList () {
-  const dataRef = firebase.database()
-    .ref('demos/guestbook')
-    .orderByKey()
-    .limitToLast(8)
-
+/**
+ * The list of guestbook entries.
+ */
+function GuestbookList() {
+  // The `useFirebaseDatabase` hook makes this component automatically
+  // subscribe to Firebase Realtime Database. When the data change,
+  // this component is automatically re-rendered.
+  //
+  const guestbookState = fiery.useFirebaseDatabase(
+    firebase
+      .database()
+      .ref('demos/guestbook')
+      .orderByKey()
+      .limitToLast(8)
+  )
   return (
     <UI.EntryList>
-      {/* Subscribe to Firebase Realtime Database */}
-      <fiery.Data dataRef={dataRef}>
-        {(guestbookState) => fiery.unwrap(guestbookState, {
-          loading: () =>
-            <UI.Loading message='Loading messages…' />,
-          completed: (guestbook) =>
-            Object.keys(guestbook).map(key =>
-              <UI.EntryList.Item
-                key={key}
-                text={guestbook[key].text}
-                name={guestbook[key].name}
-              />
-            ),
-          error: (error) =>
-            <UI.ErrorMessage error={error} retry={retry} />
-        })}
-      </fiery.Data>
+      {guestbookState.loading ? (
+        <UI.Loading message="Loading messages…" />
+      ) : guestbookState.failed ? (
+        <UI.ErrorMessage
+          error={guestbookState.error}
+          retry={guestbookState.retry}
+        />
+      ) : (
+        Object.keys(guestbookState.data).map(key => (
+          <UI.EntryList.Item
+            key={key}
+            text={guestbookState.data[key].text}
+            name={guestbookState.data[key].name}
+          />
+        ))
+      )}
     </UI.EntryList>
   )
 }
 
-// The form to submit a guestbook entry.
-function GuestbookForm () {
-  return (
-    <fiery.Auth>
-      {userState => fiery.unwrap(userState, {
-        loading: () =>
-          <UI.Loading message='Checking authentication status…' />,
-        completed: (user) =>
-          user ? (
-            <UI.EntryForm onSend={(text) => submitForm(text, user)} />
-          ) : (
-            <UI.AuthenticationWall onSignIn={signIn} />
-          ),
-        error: (error) =>
-          <UI.ErrorMessage error={error} retry={retry} />
-      })}
-    </fiery.Auth>
+/**
+ * The form to submit a guestbook entry.
+ */
+function GuestbookForm() {
+  // The `useFirebaseAuth` hook makes this component automatically
+  // subscribe to Firebase Authentication state. When user signs in
+  // or signs out, this component will automatically update.
+  //
+  const userState = fiery.useFirebaseAuth()
+  return userState.loading ? (
+    <UI.Loading message="Checking authentication status…" />
+  ) : userState.failed ? (
+    <UI.ErrorMessage error={userState.error} retry={userState.retry} />
+  ) : userState.data ? (
+    <UI.EntryForm onSend={text => submitForm(text, userState.data)} />
+  ) : (
+    <UI.AuthenticationWall onSignIn={signIn} />
   )
 }
 
-// Write to Firebase Realtime Database using the familiar Firebase SDK APIs!
-function submitForm (text, user) {
-  firebase.database().ref('demos/guestbook').push({
-    time: firebase.database.ServerValue.TIMESTAMP,
-    name: user.displayName,
-    text: text
-  })
+// Write to Firebase Realtime Database using the familiar Firebase SDK!
+//
+function submitForm(text, user) {
+  firebase
+    .database()
+    .ref('demos/guestbook')
+    .push({
+      time: firebase.database.ServerValue.TIMESTAMP,
+      name: user.displayName,
+      text: text
+    })
 }
 
-// Render the app..
+// Render the app...
+//
 ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 </script>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">API Usage</h2>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.unwrap</code> &#x2014; Working with remote data states</h3>
-<p>Data from Firebase is wrapped in a <code class="light-green">RemoteDataState</code> object, which can represent 3 states:</p>
+<p>fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> provides both <a href="https://reactjs.org/hooks" class="light-pink">hooks</a>- and <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a>-based APIs (<a href="https://twitter.com/dtinth/status/1055874999377047553" class="light-pink">rationale</a>).</p>
+<h3 class="gold mt5 f3 lh-title"><code>fiery.DataState&lt;T&gt;</code> &#x2014; Representing remote data.</h3>
+<p>When loading data from remote sources, the data may not come immediately. In fiery, to represent this, we use a <code class="light-green">DataState&lt;T&gt;</code>, which is a plain JS object with these properties:</p>
 <ul>
-<li><strong class="light-yellow">loading</strong> &#x2014; when data is being fetched.</li>
-<li><strong class="light-yellow">completed</strong> &#x2014; when data is available.</li>
-<li><strong class="light-yellow">error</strong> &#x2014; when data cannot be fetched.</li>
+<li><code class="light-green">loading</code> &#x2014; A <strong class="light-yellow">boolean</strong> representing whether data is being actively loaded or not.</li>
+<li><code class="light-green">failed</code> &#x2014; A <strong class="light-yellow">boolean</strong> representing whether data failed to load or not. <strong class="light-yellow">Note:</strong> When retrying, the <code class="light-green">failed</code> flag will stay <code class="light-green">true</code> until new data has been loaded successfully.</li>
+<li><code class="light-green">data</code> &#x2014; The data of type <strong class="light-yellow">T</strong>. May be <code class="light-green">undefined</code> if <code class="light-green">loading || failed</code>.</li>
+<li><code class="light-green">error</code> &#x2014; The <strong class="light-yellow">Error</strong>. May be <code class="light-green">undefined</code> if <code class="light-green">!failed</code>.</li>
+<li><code class="light-green">retry</code> &#x2014; A <strong class="light-yellow">function</strong> that may be called to retry the operation. May be <code class="light-green">undefined</code> if <code class="light-green">!failed || loading</code>.</li>
 </ul>
-<p>Use the <code class="light-green">fiery.unwrap()</code> function to unwrap it. It accepts 2 arguments:</p>
+<p>If you use TypeScript, our typings file can help preventing you from accessing the <code class="light-green">data</code> in loading or failed state. Refer to this table.</p>
+<table>
+<thead>
+<tr>
+<th class="ba b--white-20 ph2"><code>loading</code></th>
+<th class="ba b--white-20 ph2"><code>failed</code></th>
+<th class="ba b--white-20 ph2"><code>data</code></th>
+<th class="ba b--white-20 ph2"><code>error</code></th>
+<th class="ba b--white-20 ph2"><code>retry</code></th>
+<th class="ba b--white-20 ph2">Remarks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T | undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2">Initial load</td>
+</tr>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T | undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">Error</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2">Retrying</td>
+</tr>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">undefined</code></td>
+<td class="ba b--white-20 ph2">Completed</td>
+</tr>
+<tr>
+<td class="ba b--white-20 ph2"><code class="light-green">false</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">true</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">T | undefined</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">Error</code></td>
+<td class="ba b--white-20 ph2"><code class="light-green">() =&gt; void</code></td>
+<td class="ba b--white-20 ph2">Error</td>
+</tr>
+</tbody>
+</table>
+<h3 class="gold mt5 f3 lh-title"><code>fiery.useFirebaseAuth()</code></h3>
+<p>Subscribe and use authentication state.</p>
 <ul>
-<li><code class="light-green">state</code> &#x2014; The <code class="light-green">RemoteDataState</code> object to unwrap.</li>
-<li><code class="light-green">spec</code> &#x2014; An <strong class="light-yellow">object</strong> specifying how to unwrap this object in each state. Should contain 3 methods:
-<ul>
-<li><code class="light-green">loading()</code> &#x2014; for <strong class="light-yellow">loading</strong> state</li>
-<li><code class="light-green">completed(data)</code> &#x2014; for <strong class="light-yellow">completed</strong> state</li>
-<li><code class="light-green">error(error, retry)</code> &#x2014; for <strong class="light-yellow">error</strong> state</li>
+<li>Returns a <code class="light-green">fiery.DataState&lt;firebase.User | null&gt;</code> wrapping a <a href="https://firebase.google.com/docs/reference/js/firebase.User" class="light-pink"><code>firebase.User</code></a> object (if signed in) or <code class="light-green">null</code> (if signed out).</li>
 </ul>
-</li>
-</ul>
-<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token comment">// Example: Unwrapping a RemoteDataState into a React element.</span>
-fiery<span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span>dataState<span class="token punctuation">,</span> <span class="token punctuation">{</span>
-  loading<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">&gt;</span></span>Loading data&#x2026;<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">,</span>
-  completed<span class="token punctuation">:</span> <span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">&gt;</span></span>Data is <span class="token punctuation">{</span>JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span><span class="token punctuation">,</span>
-  error<span class="token punctuation">:</span> <span class="token punctuation">(</span>error<span class="token punctuation">,</span> retry<span class="token punctuation">)</span> <span class="token operator">=&gt;</span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ErrorMessage</span> <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>error<span class="token punctuation">}</span></span> <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>retry<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
-</pre>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.Auth</code> &#x2014; Subscribe to authentication state</h3>
+<h3 class="gold mt5 f3 lh-title"><code>fiery.Auth</code></h3>
+<p>Render prop version of <code class="light-green">fiery.useFirebaseAuth</code>.</p>
 <p>Takes a single prop:</p>
 <ul>
 <li><code class="light-green">children</code> &#x2014; A <strong class="light-yellow">function</strong> that determines how the authentication state should be rendered.
-Will be called with a <code class="light-green">RemoteDataState</code> wrapping a <a href="https://firebase.google.com/docs/reference/js/firebase.User" class="light-pink"><code>firebase.User</code></a> object (if signed in) or <code class="light-green">null</code> (if signed out).</li>
+It will be called with a <code class="light-green">RemoteDataState</code> wrapping a <a href="https://firebase.google.com/docs/reference/js/firebase.User" class="light-pink"><code>firebase.User</code></a> object (if signed in) or <code class="light-green">null</code> (if signed out).</li>
 </ul>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.Data</code> &#x2014; Subscribe to Realtime Database</h3>
+<h3 class="gold mt5 f3 lh-title"><code>fiery.useFirebaseDatabase(dataRef: firebase.database.Query)</code></h3>
+<p>Subscribe and use data from Firebase Realtime Database.</p>
+<ul>
+<li><code class="light-green">dataRef</code> &#x2014; A <a href="https://firebase.google.com/docs/reference/js/firebase.database.Reference" class="light-pink"><code>firebase.database.Reference</code></a> representing the data reference to fetch.</li>
+<li>Returns a <code class="light-green">fiery.DataState&lt;any&gt;</code> wrapping the data (if it exists) or <code class="light-green">null</code> otherwise.</li>
+</ul>
+<h3 class="gold mt5 f3 lh-title"><code>fiery.Data</code></h3>
+<p>Render prop version of <code class="light-green">fiery.useFirebaseDatabase</code>.</p>
 <p>Takes two props:</p>
 <ul>
 <li><code class="light-green">dataRef</code> &#x2014; A <a href="https://firebase.google.com/docs/reference/js/firebase.database.Reference" class="light-pink"><code>firebase.database.Reference</code></a> representing the data reference to fetch.</li>
 <li><code class="light-green">children</code> &#x2014; A <strong class="light-yellow">function</strong> that determines how the data state should be rendered.
-Will be called with a <code class="light-green">RemoteDataState</code> wrapping the data.</li>
+It will be called with a <code class="light-green">fiery.DataState&lt;any&gt;</code> wrapping the data (if it exists) or <code class="light-green">null</code> otherwise.</li>
 </ul>
+<h3 class="gold mt5 f3 lh-title">Looking for Firebase Firestore bindings?</h3>
+<p>Please contribute!</p>
 <h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Development</h2>
 <p>This project uses Yarn.</p>
 <h3 class="gold mt5 f3 lh-title">Dependencies</h3>

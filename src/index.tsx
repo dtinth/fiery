@@ -1,118 +1,179 @@
 import * as React from 'react'
 import * as firebase from 'firebase'
 
-type DataState<T> =
-  | { _status: '🕓' }
-  | { _status: '💢'; _error: Error; _retry: () => any }
-  | { _status: '😀'; _data: T }
+export type DataState<T> =
+  | {
+      loading: true
+      failed: false
+      error?: undefined
+      data?: T
+      retry?: undefined
+    }
+  | {
+      loading: true
+      failed: true
+      error: Error
+      data?: T
+      retry?: undefined
+    }
+  | {
+      loading: false
+      failed: true
+      error: Error
+      data?: T
+      retry: () => void
+    }
+  | {
+      loading: false
+      failed: false
+      error?: undefined
+      data: T
+      retry?: undefined
+    }
 
-export class Auth extends React.Component<{
-  children: (userState: DataState<firebase.User>) => React.ReactNode
-}> {
-  private unsubscribe: () => any = () => {}
+const useState: <T>(
+  initialState: () => T
+) => [T, StateSetter<T>] = (React as any).useState
 
-  auth = firebase.auth()
-  state = { userState: { _status: '🕓' } as DataState<firebase.User> }
-  observe() {
-    this.unsubscribe = this.auth.onAuthStateChanged(
-      user => {
-        this.setState({ userState: { _status: '😀', _data: user } })
-      },
-      error => {
-        this.setState({
-          userState: {
-            _status: '💢',
-            _error: (error as any) as Error,
-            _retry: () => this.observe()
-          } as DataState<firebase.User>
+type StateSetter<T> = {
+  (newState: T): void
+  (updater: (state: T) => T): void
+}
+
+const useEffect: (
+  effect: () => (() => void),
+  dependencies: any[]
+) => void = (React as any).useEffect
+
+function receiveError(
+  error: Error,
+  retry: () => void
+): <T>(oldState: DataState<T>) => DataState<T> {
+  return oldState => ({
+    loading: false,
+    failed: true,
+    error: error,
+    data: oldState.data,
+    retry
+  })
+}
+
+function retryBegin<T>(oldState: DataState<T>): DataState<T> {
+  if (oldState.failed) {
+    return {
+      loading: true,
+      failed: true,
+      error: oldState.error,
+      data: oldState.data
+    }
+  } else {
+    return {
+      loading: true,
+      failed: false,
+      data: oldState.data
+    }
+  }
+}
+
+export function useFirebaseAuth() {
+  const [auth] = useState(() => firebase.auth())
+  const [retryCount, setRetryCount] = useState(() => 0)
+  const [authState, setAuthState] = useState<DataState<firebase.User | null>>(
+    () => {
+      return auth.currentUser
+        ? { loading: false, failed: false, data: auth.currentUser }
+        : { loading: true, failed: false, data: auth.currentUser }
+    }
+  )
+  useEffect(
+    () => {
+      return auth.onAuthStateChanged(
+        user => {
+          setAuthState({ loading: false, failed: false, data: user })
+        },
+        error => {
+          const retry = () => {
+            setAuthState(retryBegin)
+            setRetryCount(c => c + 1)
+          }
+          setAuthState(receiveError((error as any) as Error, retry))
+        }
+      )
+    },
+    [retryCount]
+  )
+  return authState
+}
+
+type TestInterface = {
+  simulateError?: (error: Error) => void
+}
+
+export function useFirebaseDatabase(
+  query: firebase.database.Query,
+  refTestInterface?: (testInterface: TestInterface | null) => void
+): DataState<any> {
+  const [testInterface] = useState<TestInterface>(() => ({}))
+  const [dataState, setDataState] = useState<DataState<any>>(() => {
+    return { loading: true, failed: false }
+  })
+  const [retryCount, setRetryCount] = useState(() => 0)
+  useEffect(
+    () => {
+      let unsubscribed = false
+      const subscriber = (snapshot: firebase.database.DataSnapshot | null) => {
+        if (unsubscribed) return
+        setDataState({
+          loading: false,
+          failed: false,
+          data: snapshot && snapshot.val()
         })
       }
-    )
-  }
-  componentDidMount() {
-    this.observe()
-  }
-  componentWillUnmount() {
-    this.unsubscribe()
-  }
-  render() {
-    return this.props.children(this.state.userState)
-  }
-}
-
-type DataProps = {
-  dataRef: firebase.database.Reference
-  children: (dataState: DataState<any>) => React.ReactNode
-}
-
-export class Data extends React.Component<DataProps> {
-  private dataRef?: firebase.database.Reference
-  private loaded = false
-  state = { dataState: { _status: '🕓' } as DataState<any> }
-  componentDidMount() {
-    this.setDataRef(this.props.dataRef)
-  }
-  setDataRef(ref: firebase.database.Reference) {
-    if (this.dataRef) {
-      this.dataRef.off('value', this.onUpdate)
-    }
-    this.dataRef = ref
-    this.loaded = false
-    this.dataRef.on('value', this.onUpdate, this.onError)
-    if (!this.loaded) {
-      this.setState({ dataState: { _status: '🕓' } as DataState<any> })
-    }
-  }
-  componentWillUnmount() {
-    if (this.dataRef) {
-      this.dataRef.off('value', this.onUpdate)
-    }
-  }
-  componentDidUpdate(prevProps: DataProps) {
-    if (!this.props.dataRef.isEqual(prevProps.dataRef)) {
-      this.setDataRef(this.props.dataRef)
-    }
-  }
-  onUpdate = (snapshot: firebase.database.DataSnapshot | null) => {
-    this.loaded = true
-    this.setState({
-      dataState: {
-        _status: '😀',
-        _data: snapshot && snapshot.val()
-      } as DataState<any>
-    })
-  }
-  onError = (error: Error) => {
-    this.loaded = false
-    this.setState({
-      dataState: {
-        _status: '💢',
-        _error: error,
-        _retry: () => this.setDataRef(this.props.dataRef)
+      const onError = (e: Error) => {
+        const retry = () => {
+          setDataState(retryBegin)
+          setRetryCount(c => c + 1)
+        }
+        setDataState(receiveError(e, retry))
       }
-    })
-  }
-  render() {
-    return this.props.children(this.state.dataState)
-  }
+      query.on('value', subscriber, onError)
+      testInterface.simulateError = e => onError(e)
+      return () => {
+        unsubscribed = true
+
+        // Wait a bit before actually unsubscribing, to keep cached data.
+        setTimeout(() => {
+          query.off('value', subscriber)
+        })
+      }
+    },
+    [query.toString(), retryCount]
+  )
+  useEffect(
+    () => {
+      if (refTestInterface) refTestInterface(testInterface)
+      return () => {
+        if (refTestInterface) refTestInterface(null)
+      }
+    },
+    [refTestInterface]
+  )
+  return dataState
 }
 
-export function unwrap<V, T = React.ReactNode>(
-  state: DataState<V>,
-  spec: {
-    completed: (v: V) => T
-    loading: () => T
-    error: (error: Error, retry: () => any) => T
-  }
-): T {
-  switch (state._status) {
-    case '🕓':
-      return spec.loading()
-    case '💢':
-      return spec.error(state._error, state._retry)
-    case '😀':
-      return spec.completed(state._data)
-  }
+export function Auth(props: {
+  children: (authState: DataState<firebase.User | null>) => React.ReactNode
+}) {
+  const authState = useFirebaseAuth()
+  return props.children(authState)
 }
 
-export default { Auth, Data, unwrap }
+export function Data(props: {
+  dataRef: firebase.database.Query
+  children: (dataState: DataState<any>) => React.ReactNode
+}) {
+  const dataState = useFirebaseDatabase(props.dataRef)
+  return props.children(dataState)
+}
+
+export default { useFirebaseAuth, useFirebaseDatabase, Auth, Data }

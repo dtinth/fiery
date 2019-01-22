@@ -6,19 +6,13 @@ export default {
     file: 'umd/fiery.js',
     format: 'umd',
     name: 'fiery',
-    exports: 'named'
+    exports: 'named',
+    globals: {
+      react: 'React',
+      'react-dom': 'ReactDOM',
+      firebase: 'firebase'
+    }
   },
-  plugins: [
-    typescript()
-  ],
-  external: [
-    'react',
-    'react-dom',
-    'firebase'
-  ],
-  globals: {
-    'react': 'React',
-    'react-dom': 'ReactDOM',
-    'firebase': 'firebase'
-  }
+  plugins: [typescript()],
+  external: ['react', 'react-dom', 'firebase']
 }
