@@ -85,24 +85,34 @@ const result = postProcessMarkdown(md.render(readme)).replace(
       section(
         'Require scripts',
         `
-        <script crossorigin src="https://unpkg.com/react@16.7.0-alpha.0/umd/react.development.js"></script>
-        <script crossorigin src="https://unpkg.com/react-dom@16.7.0-alpha.0/umd/react-dom.development.js"></script>
-      <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
-      <script>
-        var config = {
-          apiKey: "AIzaSyDLDD_KtKkfAj9sgOHupxUuDt_p8g19bkU",
-          authDomain: "fiery-react.firebaseapp.com",
-          databaseURL: "https://fiery-react.firebaseio.com",
-          projectId: "fiery-react",
-          storageBucket: "",
-          messagingSenderId: "284926450412"
-        };
-        firebase.initializeApp(config);
-      </script>
-      <!-- script src="https://unpkg.com/fiery@0.0.2/umd/fiery.js"></script -->
-      <script src="../umd/fiery.js"></script>
-    `
+          <script crossorigin src="https://unpkg.com/react@16.7.0-alpha.0/umd/react.development.js"></script>
+          <script crossorigin src="https://unpkg.com/react-dom@16.7.0-alpha.0/umd/react-dom.development.js"></script>
+          <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+          <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
+          <script>
+            var config = {
+              apiKey: "AIzaSyDLDD_KtKkfAj9sgOHupxUuDt_p8g19bkU",
+              authDomain: "fiery-react.firebaseapp.com",
+              databaseURL: "https://fiery-react.firebaseio.com",
+              projectId: "fiery-react",
+              storageBucket: "",
+              messagingSenderId: "284926450412"
+            };
+            firebase.initializeApp(config);
+          </script>
+          <script>
+            // For file: protocol, load fiery from local file.
+            if (location.protocol === 'file:') {
+              document.write('<script src="../umd/fiery.js"><\\/script>')
+            }
+          </script>
+          <script>
+            // Otherwise, load fiery from CDN.
+            if (typeof fiery === 'undefined') {
+              document.write('<script src="https://unpkg.com/fiery@0.3.0/umd/fiery.js"><\\/script>')
+            }
+          </script>
+        `
       ),
       section(
         'UI kit',

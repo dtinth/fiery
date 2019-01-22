@@ -13,7 +13,7 @@ npm install --save fiery
 A UMD version is also available:
 
 ```
-<script src="https://unpkg.com/fiery@0.99.0/umd/fiery.js">
+<script src="https://unpkg.com/fiery@0.3.0/umd/fiery.js">
 </script>
 ```
 
