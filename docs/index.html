@@ -144,17 +144,22 @@ pre[class*="language-"] {
 ###########################################################
 -->
 <main class="mw7 pb5 center lh-copy">
-<h1 class="yellow f-headline lh-solid mb0">fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"></h1>
+<h1 id="fiery-%F0%9F%94%A5" class="yellow f-headline lh-solid mb0"><a href="https://github.com/dtinth/fiery" class="yellow">fiery</a> <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"></h1>
 <p class="f2 mt2">fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> is the quickest and easiest way to use <strong class="light-yellow">Firebase Authentication</strong> and <strong class="light-yellow">Firebase Realtime Database</strong> in a React app. It uses latest React features and patterns such as <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a> and <a href="https://reactjs.org/docs/hooks-intro.html" class="light-pink">hooks</a>.</p>
-<h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Installation</h2>
+<p><strong class="light-yellow">Jump to:</strong> <a href="#installation" class="light-pink">Installation</a> &#xB7; <a href="#demo" class="light-pink">Demo</a> &#xB7; <a href="#api-usage" class="light-pink">API Usage</a> &#xB7; <a href="#development" class="light-pink">Development</a> &#xB7; <a href="#license" class="light-pink">License</a></p>
+<h2 id="installation" class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Installation</h2>
 <p>You can install fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> from npm:</p>
 <pre class="washed-green bg-dark-green pa3"><code>npm install --save fiery
 </code></pre>
-<p>A UMD version is also available:</p>
+<p>If you&#x2019;re using <a href="https://reactjs.org/docs/create-a-new-react-app.html#create-react-app" class="light-pink">Create React App</a> or a module bundler such as webpack or parcel, you can import fiery using the <code class="light-green">import</code> statement:</p>
+<pre class="washed-green bg-dark-green pa3"><code>import fiery from &apos;fiery&apos;
+</code></pre>
+<p>If you&#x2019;re <a href="https://reactjs.org/docs/add-react-to-a-website.html" class="light-pink">using React with no build tooling</a>, a UMD version is also available (make sure to include <code class="light-green">react</code>, <code class="light-green">react-dom</code>, and <code class="light-green">firebase</code> before including <code class="light-green">fiery</code>):</p>
 <pre class="washed-green bg-dark-green pa3"><code>&lt;script src=&quot;https://unpkg.com/fiery@0.3.0/umd/fiery.js&quot;&gt;
 &lt;/script&gt;
 </code></pre>
-<h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Demo</h2>
+<p><strong class="light-yellow">Important:</strong> Make sure you are using a version of React that supports the <a href="https://reactjs.org/docs/hooks-intro.html" class="light-pink">Hooks API</a>.</p>
+<h2 id="demo" class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Demo</h2>
 <p><a href="https://dtinth.github.io/fiery/#DistributedCounter" class="light-pink">Try it out!</a></p>
 <!--
 #######################
@@ -293,6 +298,7 @@ window.UI = (function() {
         <input
           className="f6 f5-l button-reset fl pv3 tc bn bg-animate bg-black-70 hover-bg-black white pointer w-100 w-25-m w-20-l br2-ns br--right-ns sans-serif"
           type="submit"
+          name="submitButton"
           value="Send"
         />
       </div>
@@ -303,10 +309,11 @@ window.UI = (function() {
       <form
         className="bg-white-10 pa3"
         onSubmit={e => {
-          const text = e.target.text.value
-          e.target.text.value = ''
           e.preventDefault()
-          onSend(text)
+          const input = e.target.text
+          const text = input.value
+          input.value = ''
+          onSend(text).catch(e => window.alert(`Error: ${e}`))
         }}
       >
         <GuestbookInputField />
@@ -341,7 +348,7 @@ window.UI = (function() {
     
 
 <pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="DistributedCounter"><span class="token comment">// Demo: DistributedCounter</span>
-<span class="token comment">// This demo app uses only Stateless Functional Components!</span>
+<span class="token comment">// This demo app uses only Functional Components!</span>
 
 <span class="token comment">// Normal Firebase stuff...</span>
 <span class="token comment">//</span>
@@ -386,7 +393,7 @@ ReactDOM<span class="token punctuation">.</span><span class="token function">ren
   document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;DistributedCounter&apos;</span><span class="token punctuation">)</span>
 <span class="token punctuation">)</span>
 </pre><script type="text/babel">// Demo: DistributedCounter
-// This demo app uses only Stateless Functional Components!
+// This demo app uses only Functional Components!
 
 // Normal Firebase stuff...
 //
@@ -444,7 +451,7 @@ ReactDOM.render(
     
 
 <pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="GuestbookApp"><span class="token comment">// Demo: GuestbookApp</span>
-<span class="token comment">// This demo app uses only Stateless Functional Components!</span>
+<span class="token comment">// This demo app uses only Functional Components!</span>
 <span class="token keyword">function</span> <span class="token function">GuestbookApp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>section</span><span class="token punctuation">&gt;</span></span>
@@ -516,7 +523,7 @@ ReactDOM.render(
     firebase
       <span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
       <span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/guestbook&apos;</span><span class="token punctuation">)</span>
-      <span class="token punctuation">.</span><span class="token function">orderByKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">orderByChild</span><span class="token punctuation">(</span><span class="token string">&apos;time&apos;</span><span class="token punctuation">)</span>
       <span class="token punctuation">.</span><span class="token function">limitToLast</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
   <span class="token punctuation">)</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -564,7 +571,7 @@ ReactDOM.render(
 <span class="token comment">// Write to Firebase Realtime Database using the familiar Firebase SDK!</span>
 <span class="token comment">//</span>
 <span class="token keyword">function</span> <span class="token function">submitForm</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> user<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  firebase
+  <span class="token keyword">return</span> firebase
     <span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token string">&apos;demos/guestbook&apos;</span><span class="token punctuation">)</span>
     <span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
@@ -578,7 +585,7 @@ ReactDOM.render(
 <span class="token comment">//</span>
 ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>GuestbookApp</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;GuestbookApp&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 </pre><script type="text/babel">// Demo: GuestbookApp
-// This demo app uses only Stateless Functional Components!
+// This demo app uses only Functional Components!
 function GuestbookApp() {
   return (
     <section>
@@ -650,7 +657,7 @@ function GuestbookList() {
     firebase
       .database()
       .ref('demos/guestbook')
-      .orderByKey()
+      .orderByChild('time')
       .limitToLast(8)
   )
   return (
@@ -698,7 +705,7 @@ function GuestbookForm() {
 // Write to Firebase Realtime Database using the familiar Firebase SDK!
 //
 function submitForm(text, user) {
-  firebase
+  return firebase
     .database()
     .ref('demos/guestbook')
     .push({
@@ -712,9 +719,9 @@ function submitForm(text, user) {
 //
 ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 </script>
-<h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">API Usage</h2>
+<h2 id="api-usage" class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">API Usage</h2>
 <p>fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> provides both <a href="https://reactjs.org/hooks" class="light-pink">hooks</a>- and <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a>-based APIs (<a href="https://twitter.com/dtinth/status/1055874999377047553" class="light-pink">rationale</a>).</p>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.DataState&lt;T&gt;</code> &#x2014; Representing remote data.</h3>
+<h3 id="fiery.datastate%3Ct%3E-%E2%80%94-representing-remote-data." class="gold mt5 f3 lh-title"><code>fiery.DataState&lt;T&gt;</code> &#x2014; Representing remote data.</h3>
 <p>When loading data from remote sources, the data may not come immediately. In fiery, to represent this, we use a <code class="light-green">DataState&lt;T&gt;</code>, which is a plain JS object with these properties:</p>
 <ul>
 <li><code class="light-green">loading</code> &#x2014; A <strong class="light-yellow">boolean</strong> representing whether data is being actively loaded or not.</li>
@@ -770,25 +777,25 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 </tr>
 </tbody>
 </table>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.useFirebaseAuth()</code></h3>
+<h3 id="fiery.usefirebaseauth()" class="gold mt5 f3 lh-title"><code>fiery.useFirebaseAuth()</code></h3>
 <p>Subscribe and use authentication state.</p>
 <ul>
 <li>Returns a <code class="light-green">fiery.DataState&lt;firebase.User | null&gt;</code> wrapping a <a href="https://firebase.google.com/docs/reference/js/firebase.User" class="light-pink"><code>firebase.User</code></a> object (if signed in) or <code class="light-green">null</code> (if signed out).</li>
 </ul>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.Auth</code></h3>
+<h3 id="fiery.auth" class="gold mt5 f3 lh-title"><code>fiery.Auth</code></h3>
 <p>Render prop version of <code class="light-green">fiery.useFirebaseAuth</code>.</p>
 <p>Takes a single prop:</p>
 <ul>
 <li><code class="light-green">children</code> &#x2014; A <strong class="light-yellow">function</strong> that determines how the authentication state should be rendered.
 It will be called with a <code class="light-green">RemoteDataState</code> wrapping a <a href="https://firebase.google.com/docs/reference/js/firebase.User" class="light-pink"><code>firebase.User</code></a> object (if signed in) or <code class="light-green">null</code> (if signed out).</li>
 </ul>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.useFirebaseDatabase(dataRef: firebase.database.Query)</code></h3>
+<h3 id="fiery.usefirebasedatabase(dataref%3A-firebase.database.query)" class="gold mt5 f3 lh-title"><code>fiery.useFirebaseDatabase(dataRef: firebase.database.Query)</code></h3>
 <p>Subscribe and use data from Firebase Realtime Database.</p>
 <ul>
 <li><code class="light-green">dataRef</code> &#x2014; A <a href="https://firebase.google.com/docs/reference/js/firebase.database.Reference" class="light-pink"><code>firebase.database.Reference</code></a> representing the data reference to fetch.</li>
 <li>Returns a <code class="light-green">fiery.DataState&lt;any&gt;</code> wrapping the data (if it exists) or <code class="light-green">null</code> otherwise.</li>
 </ul>
-<h3 class="gold mt5 f3 lh-title"><code>fiery.Data</code></h3>
+<h3 id="fiery.data" class="gold mt5 f3 lh-title"><code>fiery.Data</code></h3>
 <p>Render prop version of <code class="light-green">fiery.useFirebaseDatabase</code>.</p>
 <p>Takes two props:</p>
 <ul>
@@ -796,30 +803,30 @@ It will be called with a <code class="light-green">RemoteDataState</code> wrappi
 <li><code class="light-green">children</code> &#x2014; A <strong class="light-yellow">function</strong> that determines how the data state should be rendered.
 It will be called with a <code class="light-green">fiery.DataState&lt;any&gt;</code> wrapping the data (if it exists) or <code class="light-green">null</code> otherwise.</li>
 </ul>
-<h3 class="gold mt5 f3 lh-title">Looking for Firebase Firestore bindings?</h3>
+<h3 id="looking-for-firebase-firestore-bindings%3F" class="gold mt5 f3 lh-title">Looking for Firebase Firestore bindings?</h3>
 <p>Please contribute!</p>
-<h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Development</h2>
+<h2 id="development" class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">Development</h2>
 <p>This project uses Yarn.</p>
-<h3 class="gold mt5 f3 lh-title">Dependencies</h3>
+<h3 id="dependencies" class="gold mt5 f3 lh-title">Dependencies</h3>
 <p>To install dependencies, run:</p>
 <pre class="washed-green bg-dark-green pa3"><code>yarn
 </code></pre>
-<h3 class="gold mt5 f3 lh-title">Development</h3>
+<h3 id="development-2" class="gold mt5 f3 lh-title">Development</h3>
 <p>Run:</p>
 <pre class="washed-green bg-dark-green pa3"><code>yarn dev
 </code></pre>
 <p>This will run Rollup in watch mode and generate <code class="light-green">umd/fiery.js</code>.
 It will also re-generate the documentation site on change.</p>
-<h3 class="gold mt5 f3 lh-title">Building</h3>
+<h3 id="building" class="gold mt5 f3 lh-title">Building</h3>
 <p>To build the library once, run:</p>
 <pre class="washed-green bg-dark-green pa3"><code>yarn build
 </code></pre>
 <p>This will generate <code class="light-green">umd/fiery.js</code>.</p>
-<h3 class="gold mt5 f3 lh-title">Docs</h3>
+<h3 id="docs" class="gold mt5 f3 lh-title">Docs</h3>
 <p>The documentation website is generated from <code class="light-green">README.md</code>.</p>
 <p>To generate the docs, run:</p>
 <pre class="washed-green bg-dark-green pa3"><code>yarn docs
 </code></pre>
-<h2 class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">License</h2>
+<h2 id="license" class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">License</h2>
 <p>MIT.</p>
 

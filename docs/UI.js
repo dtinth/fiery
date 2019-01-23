@@ -93,6 +93,7 @@ window.UI = (function() {
         <input
           className="f6 f5-l button-reset fl pv3 tc bn bg-animate bg-black-70 hover-bg-black white pointer w-100 w-25-m w-20-l br2-ns br--right-ns sans-serif"
           type="submit"
+          name="submitButton"
           value="Send"
         />
       </div>
@@ -103,10 +104,11 @@ window.UI = (function() {
       <form
         className="bg-white-10 pa3"
         onSubmit={e => {
-          const text = e.target.text.value
-          e.target.text.value = ''
           e.preventDefault()
-          onSend(text)
+          const input = e.target.text
+          const text = input.value
+          input.value = ''
+          onSend(text).catch(e => window.alert(`Error: ${e}`))
         }}
       >
         <GuestbookInputField />

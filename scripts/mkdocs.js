@@ -29,6 +29,7 @@ const md = require('markdown-it')({
     return ''
   }
 })
+md.use(require('markdown-it-anchor'))
 
 function section(name, content) {
   return `<!--
@@ -55,6 +56,9 @@ function postProcessMarkdown(html) {
   $('h3').addClass('gold mt5 f3 lh-title')
   $('strong').addClass('light-yellow')
   $('a').addClass('light-pink')
+  $('h1 a')
+    .addClass('yellow')
+    .removeClass('light-pink')
   $('p > code, li > code, td > code').addClass('light-green')
   $('th, td').addClass('ba b--white-20 ph2')
   $('pre:not([class])').addClass('washed-green bg-dark-green pa3')

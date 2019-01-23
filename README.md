@@ -1,6 +1,8 @@
-# fiery 🔥
+# [fiery](https://github.com/dtinth/fiery) 🔥
 
 fiery 🔥 is the quickest and easiest way to use **Firebase Authentication** and **Firebase Realtime Database** in a React app. It uses latest React features and patterns such as [render props](https://reactjs.org/docs/render-props.html) and [hooks](https://reactjs.org/docs/hooks-intro.html).
+
+**Jump to:** [Installation](#installation) &middot; [Demo](#demo) &middot; [API Usage](#api-usage) &middot; [Development](#development) &middot; [License](#license)
 
 ## Installation
 
@@ -10,12 +12,20 @@ You can install fiery 🔥 from npm:
 npm install --save fiery
 ```
 
-A UMD version is also available:
+If you’re using [Create React App](https://reactjs.org/docs/create-a-new-react-app.html#create-react-app) or a module bundler such as webpack or parcel, you can import fiery using the `import` statement:
+
+```
+import fiery from 'fiery'
+```
+
+If you’re [using React with no build tooling](https://reactjs.org/docs/add-react-to-a-website.html), a UMD version is also available (make sure to include `react`, `react-dom`, and `firebase` before including `fiery`):
 
 ```
 <script src="https://unpkg.com/fiery@0.3.0/umd/fiery.js">
 </script>
 ```
+
+**Important:** Make sure you are using a version of React that supports the [Hooks API](https://reactjs.org/docs/hooks-intro.html).
 
 ## Demo
 
@@ -25,7 +35,7 @@ A UMD version is also available:
 
 ```js
 // Demo: DistributedCounter
-// This demo app uses only Stateless Functional Components!
+// This demo app uses only Functional Components!
 
 // Normal Firebase stuff...
 //
@@ -73,7 +83,7 @@ ReactDOM.render(
 
 ```js
 // Demo: GuestbookApp
-// This demo app uses only Stateless Functional Components!
+// This demo app uses only Functional Components!
 function GuestbookApp() {
   return (
     <section>
@@ -145,7 +155,7 @@ function GuestbookList() {
     firebase
       .database()
       .ref('demos/guestbook')
-      .orderByKey()
+      .orderByChild('time')
       .limitToLast(8)
   )
   return (
@@ -193,7 +203,7 @@ function GuestbookForm() {
 // Write to Firebase Realtime Database using the familiar Firebase SDK!
 //
 function submitForm(text, user) {
-  firebase
+  return firebase
     .database()
     .ref('demos/guestbook')
     .push({
