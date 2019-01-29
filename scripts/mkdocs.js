@@ -58,6 +58,7 @@ function postProcessMarkdown(html) {
   $('a').addClass('light-pink')
   $('h1 a')
     .addClass('yellow')
+    .attr('href', 'https://github.com/dtinth/fiery')
     .removeClass('light-pink')
   $('p > code, li > code, td > code').addClass('light-green')
   $('th, td').addClass('ba b--white-20 ph2')

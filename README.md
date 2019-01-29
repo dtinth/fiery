@@ -1,8 +1,10 @@
-# [fiery](https://github.com/dtinth/fiery) 🔥
+# [fiery](https://dtinth.github.io/fiery/) 🔥
 
 fiery 🔥 is the quickest and easiest way to use **Firebase Authentication** and **Firebase Realtime Database** in a React app. It uses latest React features and patterns such as [render props](https://reactjs.org/docs/render-props.html), [hooks](https://reactjs.org/docs/hooks-intro.html), and [suspense](https://reactjs.org/docs/react-api.html#reactsuspense).
 
 **Jump to:** [Installation](#installation) &middot; [Demo](#demo) &middot; [API Usage](#api-usage) &middot; [Development](#development) &middot; [License](#license)
+
+_Not production-ready:_ Although I tested it in my projects and small real-world scenarios, they are only small apps and quick prototypes. Contributions are welcome to make this more suitable for production usage.
 
 ## Installation
 
