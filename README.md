@@ -104,8 +104,9 @@ function Nav() {
     <UI.NavBar title="My Guestbook">
       <UI.NavBar.Item label="Contact" />
       {/* Subscribe to the authentication state.
-          We use the Render Props technique to localize updates
-          to a single <UI.NavBar.Item /> component. */}
+          NOTE: We use the Render Props technique here to localize updates
+          to a single <UI.NavBar.Item /> component without requiring a new
+          React component. */}
       <fiery.Auth>
         {/* `authState` contains `loading`, `failed`, and `data` properties. */}
         {authState =>
@@ -255,6 +256,7 @@ function Song() {
     </section>
   )
 }
+
 function Lyrics({ sectionName }) {
   const dataRef = firebase.database().ref(`demos/tabs/${sectionName}`)
   // Use `.unstable_read()` to read the data out of Firebase.
@@ -266,6 +268,7 @@ function Lyrics({ sectionName }) {
     </div>
   )
 }
+
 ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 ```
 

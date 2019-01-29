@@ -168,8 +168,8 @@ pre[class*="language-"] {
 #######################
 -->
 
-          <script crossorigin src="https://unpkg.com/react@16.7.0-alpha.0/umd/react.development.js"></script>
-          <script crossorigin src="https://unpkg.com/react-dom@16.7.0-alpha.0/umd/react-dom.development.js"></script>
+          <script crossorigin src="https://unpkg.com/react@16.8.0-alpha.1/umd/react.development.js"></script>
+          <script crossorigin src="https://unpkg.com/react-dom@16.8.0-alpha.1/umd/react-dom.development.js"></script>
           <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
           <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
           <script>
@@ -184,8 +184,8 @@ pre[class*="language-"] {
             firebase.initializeApp(config);
           </script>
           <script>
-            // For file: protocol, load fiery from local file.
-            if (location.protocol === 'file:') {
+            // For file: protocol or localhost, load fiery from local file.
+            if (location.protocol === 'file:' || location.hostname === 'localhost') {
               document.write('<script src="../umd/fiery.js"><\/script>')
             }
           </script>
@@ -511,8 +511,9 @@ ReactDOM.render(
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar</span> <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>My Guestbook<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Contact<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
       <span class="token punctuation">{</span><span class="token comment">/* Subscribe to the authentication state.
-          We use the Render Props technique to localize updates
-          to a single &lt;UI.NavBar.Item /&gt; component. */</span><span class="token punctuation">}</span>
+          NOTE: We use the Render Props technique here to localize updates
+          to a single &lt;UI.NavBar.Item /&gt; component without requiring a new
+          React component. */</span><span class="token punctuation">}</span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Auth</span><span class="token punctuation">&gt;</span></span>
         <span class="token punctuation">{</span><span class="token comment">/* `authState` contains `loading`, `failed`, and `data` properties. */</span><span class="token punctuation">}</span>
         <span class="token punctuation">{</span>authState <span class="token operator">=&gt;</span>
@@ -644,8 +645,9 @@ function Nav() {
     <UI.NavBar title="My Guestbook">
       <UI.NavBar.Item label="Contact" />
       {/* Subscribe to the authentication state.
-          We use the Render Props technique to localize updates
-          to a single <UI.NavBar.Item /> component. */}
+          NOTE: We use the Render Props technique here to localize updates
+          to a single <UI.NavBar.Item /> component without requiring a new
+          React component. */}
       <fiery.Auth>
         {/* `authState` contains `loading`, `failed`, and `data` properties. */}
         {authState =>
@@ -805,6 +807,7 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>section</span><span class="token punctuation">&gt;</span></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
+
 <span class="token keyword">function</span> <span class="token function">Lyrics</span><span class="token punctuation">(</span><span class="token punctuation">{</span> sectionName <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> dataRef <span class="token operator">=</span> firebase<span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`demos/tabs/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>sectionName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span>
   <span class="token comment">// Use `.unstable_read()` to read the data out of Firebase.</span>
@@ -816,6 +819,7 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
+
 ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SuspenseDemo</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;SuspenseDemo&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 </pre><script type="text/babel">// Demo: SuspenseDemo
 // In this demo, there are no checks for Loading/Error state.
@@ -852,6 +856,7 @@ function Song() {
     </section>
   )
 }
+
 function Lyrics({ sectionName }) {
   const dataRef = firebase.database().ref(`demos/tabs/${sectionName}`)
   // Use `.unstable_read()` to read the data out of Firebase.
@@ -863,6 +868,7 @@ function Lyrics({ sectionName }) {
     </div>
   )
 }
+
 ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 </script>
 <h2 id="api-usage" class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">API Usage</h2>
