@@ -114,7 +114,7 @@ const result = postProcessMarkdown(md.render(readme)).replace(
           <script>
             // Otherwise, load fiery from CDN.
             if (typeof fiery === 'undefined') {
-              document.write('<script src="https://unpkg.com/fiery@0.3.0/umd/fiery.js"><\\/script>')
+              document.write('<script src="https://unpkg.com/fiery@0.4.1/umd/fiery.js"><\\/script>')
             }
           </script>
         `
