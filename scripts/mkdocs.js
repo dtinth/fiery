@@ -90,8 +90,8 @@ const result = postProcessMarkdown(md.render(readme)).replace(
       section(
         'Require scripts',
         `
-          <script crossorigin src="https://unpkg.com/react@16.7.0-alpha.0/umd/react.development.js"></script>
-          <script crossorigin src="https://unpkg.com/react-dom@16.7.0-alpha.0/umd/react-dom.development.js"></script>
+          <script crossorigin src="https://unpkg.com/react@16.8.0-alpha.1/umd/react.development.js"></script>
+          <script crossorigin src="https://unpkg.com/react-dom@16.8.0-alpha.1/umd/react-dom.development.js"></script>
           <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
           <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
           <script>
@@ -106,8 +106,8 @@ const result = postProcessMarkdown(md.render(readme)).replace(
             firebase.initializeApp(config);
           </script>
           <script>
-            // For file: protocol, load fiery from local file.
-            if (location.protocol === 'file:') {
+            // For file: protocol or localhost, load fiery from local file.
+            if (location.protocol === 'file:' || location.hostname === 'localhost') {
               document.write('<script src="../umd/fiery.js"><\\/script>')
             }
           </script>
