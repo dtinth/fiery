@@ -20,7 +20,7 @@
   },
   "name": "fiery",
   "description": "Easy declarative modern Firebase binding for React ^_^",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "main": "umd/fiery.js",
   "module": "esm/index.js",
   "typings": "esm/index.d.ts",
