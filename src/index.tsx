@@ -31,6 +31,10 @@ export type DataState<T> =
       retry?: undefined
     }
 
+export type Suspensible<T> = {
+  unstable_read: () => T
+}
+
 function receiveError(
   error: Error,
   retry: () => void
@@ -98,12 +102,14 @@ type TestInterface = {
 export function useFirebaseDatabase(
   query: firebase.database.Query,
   refTestInterface?: (testInterface: TestInterface | null) => void
-): DataState<any> {
+): DataState<any> & Suspensible<any> {
+  const suspenseErrorRef = React.useRef<Error | null>(null)
   const [testInterface] = React.useState<TestInterface>(() => ({}))
   const [dataState, setDataState] = React.useState<DataState<any>>(() => {
     return { loading: true, failed: false }
   })
   const [retryCount, setRetryCount] = React.useState(() => 0)
+  const identifier = getDatabaseQueryIdentifier(query)
   React.useEffect(
     () => {
       let unsubscribed = false
@@ -133,7 +139,7 @@ export function useFirebaseDatabase(
         })
       }
     },
-    [query.toString(), retryCount]
+    [identifier, retryCount]
   )
   React.useEffect(
     () => {
@@ -144,7 +150,29 @@ export function useFirebaseDatabase(
     },
     [refTestInterface]
   )
-  return dataState
+  function read() {
+    if (suspenseErrorRef.current) {
+      throw suspenseErrorRef.current
+    }
+    let readValue: any
+    let read: boolean = false
+    let onRead: () => void
+    const callback = (snapshot: firebase.database.DataSnapshot | null) => {
+      read = true
+      readValue = snapshot && snapshot.val()
+      setTimeout(() => query.off('value', callback))
+      if (onRead) onRead()
+    }
+    const onError = (error: Error) => {
+      suspenseErrorRef.current = error
+      setTimeout(() => query.off('value', callback))
+      if (onRead) onRead()
+    }
+    query.on('value', callback, onError)
+    if (read) return readValue
+    throw new Promise(resolve => (onRead = resolve))
+  }
+  return { ...dataState, unstable_read: read }
 }
 
 export function Auth(props: {
@@ -160,6 +188,15 @@ export function Data(props: {
 }) {
   const dataState = useFirebaseDatabase(props.dataRef)
   return props.children(dataState)
+}
+
+function getDatabaseQueryIdentifier(
+  query: firebase.database.Query & { queryIdentifier?: () => string }
+) {
+  return [
+    query.toString(),
+    query.queryIdentifier && query.queryIdentifier()
+  ].join('?')
 }
 
 export default { useFirebaseAuth, useFirebaseDatabase, Auth, Data }

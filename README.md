@@ -1,6 +1,6 @@
 # [fiery](https://github.com/dtinth/fiery) 🔥
 
-fiery 🔥 is the quickest and easiest way to use **Firebase Authentication** and **Firebase Realtime Database** in a React app. It uses latest React features and patterns such as [render props](https://reactjs.org/docs/render-props.html) and [hooks](https://reactjs.org/docs/hooks-intro.html).
+fiery 🔥 is the quickest and easiest way to use **Firebase Authentication** and **Firebase Realtime Database** in a React app. It uses latest React features and patterns such as [render props](https://reactjs.org/docs/render-props.html), [hooks](https://reactjs.org/docs/hooks-intro.html), and [suspense](https://reactjs.org/docs/react-api.html#reactsuspense).
 
 **Jump to:** [Installation](#installation) &middot; [Demo](#demo) &middot; [API Usage](#api-usage) &middot; [Development](#development) &middot; [License](#license)
 
@@ -105,8 +105,7 @@ function Nav() {
           We use the Render Props technique to localize updates
           to a single <UI.NavBar.Item /> component. */}
       <fiery.Auth>
-        {/* Data is represented in 3 states: 'loading', 'completed' and 'error'.
-            Use `fiery.unwrap` to handle all these 3 cases. */}
+        {/* `authState` contains `loading`, `failed`, and `data` properties. */}
         {authState =>
           authState.loading ? (
             <UI.NavBar.Item label="Checking auth…" disabled />
@@ -218,6 +217,56 @@ function submitForm(text, user) {
 ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 ```
 
+```js
+// Demo: SuspenseDemo
+// In this demo, there are no checks for Loading/Error state.
+// Loading state is handled by React.Suspense.
+// Error state is handled by using an Error Boundary.
+// WARNING: Unstable API!
+
+function SuspenseDemo() {
+  return (
+    // Set up an Error Boundary to catch errors.
+    <UI.ErrorBoundary>
+      <Song />
+    </UI.ErrorBoundary>
+  )
+}
+
+function Song() {
+  const sections = ['intro', 'bridge', 'chorus', 'error']
+  const [currentSection, setCurrentSection] = React.useState('intro')
+  return (
+    <section>
+      <UI.Tabs
+        tabs={sections}
+        currentSection={currentSection}
+        onTabChange={tab => setCurrentSection(tab)}
+      />
+      <UI.ContentBox>
+        {/* Use `React.Suspense` to display a loading UI
+            if any children is not ready to render */}
+        <React.Suspense fallback={<UI.Loading />}>
+          <Lyrics sectionName={currentSection} />
+        </React.Suspense>
+      </UI.ContentBox>
+    </section>
+  )
+}
+function Lyrics({ sectionName }) {
+  const dataRef = firebase.database().ref(`demos/tabs/${sectionName}`)
+  // Use `.unstable_read()` to read the data out of Firebase.
+  // Suspends rendering if data is not ready.
+  const text = fiery.useFirebaseDatabase(dataRef).unstable_read()
+  return (
+    <div>
+      <strong>{sectionName}:</strong> {text}
+    </div>
+  )
+}
+ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
+```
+
 ## API Usage
 
 fiery 🔥 provides both [hooks](https://reactjs.org/hooks)- and [render props](https://reactjs.org/docs/render-props.html)-based APIs ([rationale](https://twitter.com/dtinth/status/1055874999377047553)).
@@ -262,6 +311,7 @@ Subscribe and use data from Firebase Realtime Database.
 
 - `dataRef` — A [`firebase.database.Reference`](https://firebase.google.com/docs/reference/js/firebase.database.Reference) representing the data reference to fetch.
 - Returns a `fiery.DataState<any>` wrapping the data (if it exists) or `null` otherwise.
+  - It also contains an _unstable_ method, `unstable_read()` for reading data synchronously. It [suspends rendering](https://reactjs.org/docs/react-api.html#reactsuspense) if data from Firebase is not ready. Note that this uses an _unstable_ API and is subject to change.
 
 ### `fiery.Data`
 

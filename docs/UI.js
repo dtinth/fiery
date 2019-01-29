@@ -25,7 +25,7 @@ window.UI = (function() {
     )
   }
 
-  function Loading({ message }) {
+  function Loading({ message = 'Loading…' }) {
     return (
       <div className="pulsate">
         <em>{message}</em>
@@ -115,6 +115,43 @@ window.UI = (function() {
       </form>
     )
   }
+  function Tabs({ tabs, currentTab, onTabChange }) {
+    return (
+      <nav className="pa2 ph3 bg-purple">
+        {tabs.map(tab => (
+          <a
+            key={tab}
+            className={
+              'link white-70 f6 f5-ns dib mr3 ' +
+              (tab === currentTab ? 'b' : 'dim')
+            }
+            href="javascript:"
+            onClick={() => onTabChange(tab)}
+          >
+            {tab}
+          </a>
+        ))}
+      </nav>
+    )
+  }
+  function ContentBox({ children }) {
+    return <div className="pa3 bg-black-50">{children}</div>
+  }
+  class ErrorBoundary extends React.Component {
+    constructor(props) {
+      super(props)
+      this.state = { error: null }
+      this.retry = () => this.setState({ error: null })
+    }
+    static getDerivedStateFromError(error) {
+      return { error }
+    }
+    render() {
+      const error = this.state.error
+      if (error) return <ErrorMessage error={error} retry={this.retry} />
+      return this.props.children
+    }
+  }
 
   return {
     Button,
@@ -123,6 +160,9 @@ window.UI = (function() {
     AuthenticationWall,
     NavBar,
     EntryList,
-    EntryForm
+    EntryForm,
+    Tabs,
+    ContentBox,
+    ErrorBoundary
   }
 })()
