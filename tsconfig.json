@@ -9,7 +9,8 @@
     "rootDir": "src",
     "outDir": "esm",
     "declaration": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": ["es2015", "dom"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]

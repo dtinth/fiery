@@ -31,19 +31,9 @@ export type DataState<T> =
       retry?: undefined
     }
 
-const useState: <T>(
-  initialState: () => T
-) => [T, StateSetter<T>] = (React as any).useState
-
-type StateSetter<T> = {
-  (newState: T): void
-  (updater: (state: T) => T): void
+export type Suspensible<T> = {
+  unstable_read: () => T
 }
-
-const useEffect: (
-  effect: () => (() => void),
-  dependencies: any[]
-) => void = (React as any).useEffect
 
 function receiveError(
   error: Error,
@@ -76,16 +66,16 @@ function retryBegin<T>(oldState: DataState<T>): DataState<T> {
 }
 
 export function useFirebaseAuth() {
-  const [auth] = useState(() => firebase.auth())
-  const [retryCount, setRetryCount] = useState(() => 0)
-  const [authState, setAuthState] = useState<DataState<firebase.User | null>>(
-    () => {
-      return auth.currentUser
-        ? { loading: false, failed: false, data: auth.currentUser }
-        : { loading: true, failed: false, data: auth.currentUser }
-    }
-  )
-  useEffect(
+  const [auth] = React.useState(() => firebase.auth())
+  const [retryCount, setRetryCount] = React.useState(() => 0)
+  const [authState, setAuthState] = React.useState<
+    DataState<firebase.User | null>
+  >(() => {
+    return auth.currentUser
+      ? { loading: false, failed: false, data: auth.currentUser }
+      : { loading: true, failed: false, data: auth.currentUser }
+  })
+  React.useEffect(
     () => {
       return auth.onAuthStateChanged(
         user => {
@@ -112,13 +102,15 @@ type TestInterface = {
 export function useFirebaseDatabase(
   query: firebase.database.Query,
   refTestInterface?: (testInterface: TestInterface | null) => void
-): DataState<any> {
-  const [testInterface] = useState<TestInterface>(() => ({}))
-  const [dataState, setDataState] = useState<DataState<any>>(() => {
+): DataState<any> & Suspensible<any> {
+  const suspenseErrorRef = React.useRef<Error | null>(null)
+  const [testInterface] = React.useState<TestInterface>(() => ({}))
+  const [dataState, setDataState] = React.useState<DataState<any>>(() => {
     return { loading: true, failed: false }
   })
-  const [retryCount, setRetryCount] = useState(() => 0)
-  useEffect(
+  const [retryCount, setRetryCount] = React.useState(() => 0)
+  const identifier = getDatabaseQueryIdentifier(query)
+  React.useEffect(
     () => {
       let unsubscribed = false
       const subscriber = (snapshot: firebase.database.DataSnapshot | null) => {
@@ -147,9 +139,9 @@ export function useFirebaseDatabase(
         })
       }
     },
-    [query.toString(), retryCount]
+    [identifier, retryCount]
   )
-  useEffect(
+  React.useEffect(
     () => {
       if (refTestInterface) refTestInterface(testInterface)
       return () => {
@@ -158,7 +150,29 @@ export function useFirebaseDatabase(
     },
     [refTestInterface]
   )
-  return dataState
+  function read() {
+    if (suspenseErrorRef.current) {
+      throw suspenseErrorRef.current
+    }
+    let readValue: any
+    let read: boolean = false
+    let onRead: () => void
+    const callback = (snapshot: firebase.database.DataSnapshot | null) => {
+      read = true
+      readValue = snapshot && snapshot.val()
+      setTimeout(() => query.off('value', callback))
+      if (onRead) onRead()
+    }
+    const onError = (error: Error) => {
+      suspenseErrorRef.current = error
+      setTimeout(() => query.off('value', callback))
+      if (onRead) onRead()
+    }
+    query.on('value', callback, onError)
+    if (read) return readValue
+    throw new Promise(resolve => (onRead = resolve))
+  }
+  return { ...dataState, unstable_read: read }
 }
 
 export function Auth(props: {
@@ -174,6 +188,15 @@ export function Data(props: {
 }) {
   const dataState = useFirebaseDatabase(props.dataRef)
   return props.children(dataState)
+}
+
+function getDatabaseQueryIdentifier(
+  query: firebase.database.Query & { queryIdentifier?: () => string }
+) {
+  return [
+    query.toString(),
+    query.queryIdentifier && query.queryIdentifier()
+  ].join('?')
 }
 
 export default { useFirebaseAuth, useFirebaseDatabase, Auth, Data }
