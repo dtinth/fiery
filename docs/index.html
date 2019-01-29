@@ -788,7 +788,10 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span> <span class="token function">Song</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> sections <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;intro&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;bridge&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;chorus&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;error&apos;</span><span class="token punctuation">]</span>
+  <span class="token comment">// `error` &#x2014; always results in an error.</span>
+  <span class="token comment">// `protected` &#x2014; only logged in users can see. If you log out, you will get en error.</span>
+  <span class="token comment">// `even` &#x2014; only accessible when the Counter (1st demo) contains an even number.</span>
+  <span class="token keyword">const</span> sections <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;intro&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;bridge&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;chorus&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;error&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;protected&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;even&apos;</span><span class="token punctuation">]</span>
   <span class="token keyword">const</span> <span class="token punctuation">[</span>currentSection<span class="token punctuation">,</span> setCurrentSection<span class="token punctuation">]</span> <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">useState</span><span class="token punctuation">(</span><span class="token string">&apos;intro&apos;</span><span class="token punctuation">)</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>section</span><span class="token punctuation">&gt;</span></span>
@@ -837,7 +840,10 @@ function SuspenseDemo() {
 }
 
 function Song() {
-  const sections = ['intro', 'bridge', 'chorus', 'error']
+  // `error` — always results in an error.
+  // `protected` — only logged in users can see. If you log out, you will get en error.
+  // `even` — only accessible when the Counter (1st demo) contains an even number.
+  const sections = ['intro', 'bridge', 'chorus', 'error', 'protected', 'even']
   const [currentSection, setCurrentSection] = React.useState('intro')
   return (
     <section>

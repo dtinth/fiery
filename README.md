@@ -237,7 +237,10 @@ function SuspenseDemo() {
 }
 
 function Song() {
-  const sections = ['intro', 'bridge', 'chorus', 'error']
+  // `error` — always results in an error.
+  // `protected` — only logged in users can see. If you log out, you will get en error.
+  // `even` — only accessible when the Counter (1st demo) contains an even number.
+  const sections = ['intro', 'bridge', 'chorus', 'error', 'protected', 'even']
   const [currentSection, setCurrentSection] = React.useState('intro')
   return (
     <section>
