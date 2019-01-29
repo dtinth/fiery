@@ -31,19 +31,10 @@ export type DataState<T> =
       retry?: undefined
     }
 
-const useState: <T>(
-  initialState: () => T
-) => [T, StateSetter<T>] = (React as any).useState
-
 type StateSetter<T> = {
   (newState: T): void
   (updater: (state: T) => T): void
 }
-
-const useEffect: (
-  effect: () => (() => void),
-  dependencies: any[]
-) => void = (React as any).useEffect
 
 function receiveError(
   error: Error,
@@ -76,16 +67,16 @@ function retryBegin<T>(oldState: DataState<T>): DataState<T> {
 }
 
 export function useFirebaseAuth() {
-  const [auth] = useState(() => firebase.auth())
-  const [retryCount, setRetryCount] = useState(() => 0)
-  const [authState, setAuthState] = useState<DataState<firebase.User | null>>(
-    () => {
-      return auth.currentUser
-        ? { loading: false, failed: false, data: auth.currentUser }
-        : { loading: true, failed: false, data: auth.currentUser }
-    }
-  )
-  useEffect(
+  const [auth] = React.useState(() => firebase.auth())
+  const [retryCount, setRetryCount] = React.useState(() => 0)
+  const [authState, setAuthState] = React.useState<
+    DataState<firebase.User | null>
+  >(() => {
+    return auth.currentUser
+      ? { loading: false, failed: false, data: auth.currentUser }
+      : { loading: true, failed: false, data: auth.currentUser }
+  })
+  React.useEffect(
     () => {
       return auth.onAuthStateChanged(
         user => {
@@ -113,12 +104,12 @@ export function useFirebaseDatabase(
   query: firebase.database.Query,
   refTestInterface?: (testInterface: TestInterface | null) => void
 ): DataState<any> {
-  const [testInterface] = useState<TestInterface>(() => ({}))
-  const [dataState, setDataState] = useState<DataState<any>>(() => {
+  const [testInterface] = React.useState<TestInterface>(() => ({}))
+  const [dataState, setDataState] = React.useState<DataState<any>>(() => {
     return { loading: true, failed: false }
   })
-  const [retryCount, setRetryCount] = useState(() => 0)
-  useEffect(
+  const [retryCount, setRetryCount] = React.useState(() => 0)
+  React.useEffect(
     () => {
       let unsubscribed = false
       const subscriber = (snapshot: firebase.database.DataSnapshot | null) => {
@@ -149,7 +140,7 @@ export function useFirebaseDatabase(
     },
     [query.toString(), retryCount]
   )
-  useEffect(
+  React.useEffect(
     () => {
       if (refTestInterface) refTestInterface(testInterface)
       return () => {
