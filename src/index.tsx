@@ -31,11 +31,6 @@ export type DataState<T> =
       retry?: undefined
     }
 
-type StateSetter<T> = {
-  (newState: T): void
-  (updater: (state: T) => T): void
-}
-
 function receiveError(
   error: Error,
   retry: () => void
