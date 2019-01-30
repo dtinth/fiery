@@ -246,7 +246,7 @@ function SectionSelector() {
     <section>
       <UI.Tabs
         tabs={sections}
-        currentSection={currentSection}
+        currentTab={currentSection}
         onTabChange={tab => setCurrentSection(tab)}
       />
       <UI.ContentBox>
