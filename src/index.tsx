@@ -257,10 +257,10 @@ class FirebaseDatabaseProvider implements DataProvider {
   }
 }
 
-export function useFirebaseDatabase(
+export function useFirebaseDatabase<T = any>(
   query: firebase.database.Query,
   refTestInterface?: (testInterface: TestInterface | null) => void
-): DataState<any> & Suspensible<any> {
+): DataState<T> & Suspensible<T> {
   const [dataState, dispatch] = React.useReducer(
     _cache.reducer,
     _cache.initialDataState
