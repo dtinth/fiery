@@ -251,7 +251,7 @@ function SectionSelector() {
       />
       <UI.ContentBox>
         {/* Use `React.Suspense` to display a loading UI
-            if any children is not ready to render */}
+            if any child component is not ready to render */}
         <React.Suspense fallback={<UI.Loading />}>
           <SectionContent sectionName={currentSection} />
         </React.Suspense>
@@ -262,12 +262,13 @@ function SectionSelector() {
 
 function SectionContent({ sectionName }) {
   const dataRef = firebase.database().ref(`demos/tabs/${sectionName}`)
-  // Use `.unstable_read()` to read the data out of Firebase.
-  // Suspends rendering if data is not ready.
-  const text = fiery.useFirebaseDatabase(dataRef).unstable_read()
+  const dataState = fiery.useFirebaseDatabase(dataRef)
+
   return (
     <div>
-      <strong>{sectionName}:</strong> {text}
+      {/* Use `.unstable_read()` to read the data out of Firebase.
+          Suspends rendering if data is not ready. */}
+      <strong>{sectionName}:</strong> {dataState.unstable_read()}
     </div>
   )
 }
@@ -277,9 +278,9 @@ ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 
 ## API Usage
 
-fiery 🔥 provides both [hooks](https://reactjs.org/hooks)-based and [render props](https://reactjs.org/docs/render-props.html)-based APIs ([rationale](https://twitter.com/dtinth/status/1055874999377047553)).
+fiery 🔥 provides both [hooks](https://reactjs.org/hooks)-based and [render props](https://reactjs.org/docs/render-props.html)-based APIs ([rationale](https://twitter.com/dtinth/status/1055874999377047553)). These APIs will inject **DataState objects** into your component.
 
-The state object will contain `loading`, `failed`, `data`, `error`, and `retry` properties. Or you can invoke an experimental method `unstable_read()` to make React [suspend](https://reactjs.org/docs/react-api.html#reactsuspense) rendering until it is loaded.
+A **DataState object** will contain `loading`, `failed`, `data`, `error`, and `retry` properties. It also contains an _experimental_ method `unstable_read()` to make React [suspend](https://reactjs.org/docs/react-api.html#reactsuspense) rendering until the data is loaded.
 
 ### Synopsis
 
@@ -288,6 +289,7 @@ The state object will contain `loading`, `failed`, `data`, `error`, and `retry` 
   ```js
   function HookSynopsis() {
     const counterState = fiery.useFirebaseDatabase(counterRef)
+
     if (counterState.loading) {
       return <UI.Loading />
     } else if (counterState.failed) {
@@ -300,6 +302,16 @@ The state object will contain `loading`, `failed`, `data`, `error`, and `retry` 
     } else {
       return counterState.data
     }
+  }
+  ```
+
+- Suspense + Hooks
+
+  ```js
+  function SuspenseHookSynopsis() {
+    const counterState = fiery.useFirebaseDatabase(counterRef)
+
+    return counterState.unstable_read()
   }
   ```
 
@@ -326,15 +338,6 @@ The state object will contain `loading`, `failed`, `data`, `error`, and `retry` 
   }
   ```
 
-- Suspense + Hooks
-
-  ```js
-  function SuspenseHookSynopsis() {
-    const counterState = fiery.useFirebaseDatabase(counterRef)
-    return counterState.unstable_read()
-  }
-  ```
-
 - Suspense + Render Props
   ```js
   function SuspenseRenderPropsSynopsis() {
@@ -345,25 +348,6 @@ The state object will contain `loading`, `failed`, `data`, `error`, and `retry` 
     )
   }
   ```
-
-### `fiery.DataState<T>` — Representing remote data.
-
-When loading data from remote sources, the data may not come immediately. In fiery, to represent this, we use a `DataState<T>`, which is a plain JS object with these properties:
-
-- `loading` — A **boolean** representing whether data is being actively loaded or not.
-- `failed` — A **boolean** representing whether data failed to load or not. **Note:** When retrying, the `failed` flag will stay `true` until new data has been loaded successfully.
-- `data` — The data of type **T**. May be `undefined` if `loading || failed`.
-- `error` — The **Error**. May be `undefined` if `!failed`.
-- `retry` — A **function** that may be called to retry the operation. May be `undefined` if `!failed || loading`.
-
-If you use TypeScript, our typings file can help preventing you from accessing the `data` in loading or failed state. Refer to this table.
-
-| `loading` | `failed` | `data`          | `error`     | `retry`      | Remarks      |
-| --------- | -------- | --------------- | ----------- | ------------ | ------------ |
-| `true`    | `false`  | `T | undefined` | `undefined` | `undefined`  | Initial load |
-| `true`    | `true`   | `T | undefined` | `Error`     | `undefined`  | Retrying     |
-| `false`   | `false`  | `T`             | `undefined` | `undefined`  | Completed    |
-| `false`   | `true`   | `T | undefined` | `Error`     | `() => void` | Error        |
 
 ### `fiery.useFirebaseAuth()`
 
@@ -386,7 +370,6 @@ Subscribe and use data from Firebase Realtime Database.
 
 - `dataRef` — A [`firebase.database.Reference`](https://firebase.google.com/docs/reference/js/firebase.database.Reference) representing the data reference to fetch.
 - Returns a `fiery.DataState<any>` wrapping the data (if it exists) or `null` otherwise.
-  - It also contains an _unstable_ method, `unstable_read()` for reading data synchronously. It [suspends rendering](https://reactjs.org/docs/react-api.html#reactsuspense) if data from Firebase is not ready. Note that this uses an _unstable_ API and is subject to change.
 
 ### `fiery.Data`
 
@@ -397,6 +380,29 @@ Takes two props:
 - `dataRef` — A [`firebase.database.Reference`](https://firebase.google.com/docs/reference/js/firebase.database.Reference) representing the data reference to fetch.
 - `children` — A **function** that determines how the data state should be rendered.
   It will be called with a `fiery.DataState<any>` wrapping the data (if it exists) or `null` otherwise.
+
+### `fiery.DataState<T>` — Representing remote data.
+
+When displaying data from remote sources, the data may not be immediately available — it may still be loading, or may have failed to load.
+
+fiery 🔥 represents this by providing you a `DataState<T>` object, which is a plain JS object with these properties:
+
+- `loading` — A **boolean** representing whether data is being actively loaded or not.
+- `failed` — A **boolean** representing whether data failed to load or not. **Note:** When retrying, the `failed` flag will stay `true` until new data has been loaded successfully.
+- `data` — The data of type **T**. May be `undefined` if `loading || failed`.
+- `error` — The **Error**. May be `undefined` if `!failed`.
+- `retry` — A **function** that may be called to retry the operation. May be `undefined` if `!failed || loading`.
+
+If you use TypeScript, our typings file can help preventing you from accessing the `data` in loading or failed state. Refer to this table.
+
+| `loading` | `failed` | `data`          | `error`     | `retry`      | Remarks      |
+| --------- | -------- | --------------- | ----------- | ------------ | ------------ |
+| `true`    | `false`  | `T | undefined` | `undefined` | `undefined`  | Initial load |
+| `true`    | `true`   | `T | undefined` | `Error`     | `undefined`  | Retrying     |
+| `false`   | `false`  | `T`             | `undefined` | `undefined`  | Completed    |
+| `false`   | `true`   | `T | undefined` | `Error`     | `() => void` | Error        |
+
+**Suspense support:** A DataState object also contains an _experimental_ method, `unstable_read()` for reading the data while rendering. It [suspends rendering](https://reactjs.org/docs/react-api.html#reactsuspense) if data from Firebase is not ready. Note that this uses an _unstable_ API and is subject to change.
 
 ### Looking for Firebase Firestore bindings?
 
