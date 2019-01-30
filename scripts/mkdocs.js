@@ -19,6 +19,8 @@ const md = require('markdown-it')({
         code.push(...['<script type="text/babel">', str, '</script>'])
         demoTag = ` data-demo="${id}"`
       }
+      const sloc = countSloc(str)
+      demoTag += ` data-sloc="${sloc}"`
       return [
         '<pre class="code mono f6 bg-dark-gray pa3 lh-title"' + demoTag + '>',
         Prism.highlight(str, Prism.languages.jsx),
@@ -69,18 +71,37 @@ function postProcessMarkdown(html) {
       section(
         'Demo: ' + id,
         `
-      <article class="br3 hidden ba b--black-10 mv4">
+      <article class="br3 hidden mt4 mb1">
         <h1 class="f4 bg-orange light-yellow br3 br--top mv0 pv2 ph3">Demo: ${id}</h1>
         <div class="pa3 bt bg-dark-gray b--white-10" id="${id}"></div>
       </article>
     `
       )
     )
+    const details = $('<details></details>').append(
+      $('<summary><strong>View source</strong></summary>').append(
+        ` (${$(this).attr('data-sloc')} SLOC)`
+      )
+    )
+    $(this)
+      .addClass('mt0')
+      .before(details)
+      .appendTo(details)
+    if (id === 'DistributedCounter') {
+      details.attr('open', '')
+    }
   })
   return $('body').html()
 }
 
 const unlines = a => a.join('\n')
+const countSloc = s =>
+  s
+    .replace(/\/\*[^]*?\*\//g, '')
+    .replace(/\/\/[^\n]*/g, '')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l && l !== '{}').length
 
 const readme = fs.readFileSync('README.md', 'utf8')
 const result = postProcessMarkdown(md.render(readme)).replace(
