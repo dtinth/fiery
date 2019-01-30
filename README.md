@@ -104,8 +104,9 @@ function Nav() {
     <UI.NavBar title="My Guestbook">
       <UI.NavBar.Item label="Contact" />
       {/* Subscribe to the authentication state.
-          We use the Render Props technique to localize updates
-          to a single <UI.NavBar.Item /> component. */}
+          NOTE: We use the Render Props technique here to localize updates
+          to a single <UI.NavBar.Item /> component without requiring a new
+          React component. */}
       <fiery.Auth>
         {/* `authState` contains `loading`, `failed`, and `data` properties. */}
         {authState =>
@@ -230,13 +231,16 @@ function SuspenseDemo() {
   return (
     // Set up an Error Boundary to catch errors.
     <UI.ErrorBoundary>
-      <Song />
+      <SectionSelector />
     </UI.ErrorBoundary>
   )
 }
 
-function Song() {
-  const sections = ['intro', 'bridge', 'chorus', 'error']
+function SectionSelector() {
+  // `error` — always results in an error.
+  // `protected` — only logged in users can see. If you log out, you will get en error.
+  // `even` — only accessible when the Counter (1st demo) contains an even number.
+  const sections = ['intro', 'bridge', 'chorus', 'error', 'protected', 'even']
   const [currentSection, setCurrentSection] = React.useState('intro')
   return (
     <section>
@@ -249,13 +253,14 @@ function Song() {
         {/* Use `React.Suspense` to display a loading UI
             if any children is not ready to render */}
         <React.Suspense fallback={<UI.Loading />}>
-          <Lyrics sectionName={currentSection} />
+          <SectionContent sectionName={currentSection} />
         </React.Suspense>
       </UI.ContentBox>
     </section>
   )
 }
-function Lyrics({ sectionName }) {
+
+function SectionContent({ sectionName }) {
   const dataRef = firebase.database().ref(`demos/tabs/${sectionName}`)
   // Use `.unstable_read()` to read the data out of Firebase.
   // Suspends rendering if data is not ready.
@@ -266,12 +271,80 @@ function Lyrics({ sectionName }) {
     </div>
   )
 }
+
 ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 ```
 
 ## API Usage
 
-fiery 🔥 provides both [hooks](https://reactjs.org/hooks)- and [render props](https://reactjs.org/docs/render-props.html)-based APIs ([rationale](https://twitter.com/dtinth/status/1055874999377047553)).
+fiery 🔥 provides both [hooks](https://reactjs.org/hooks)-based and [render props](https://reactjs.org/docs/render-props.html)-based APIs ([rationale](https://twitter.com/dtinth/status/1055874999377047553)).
+
+The state object will contain `loading`, `failed`, `data`, `error`, and `retry` properties. Or you can invoke an experimental method `unstable_read()` to make React [suspend](https://reactjs.org/docs/react-api.html#reactsuspense) rendering until it is loaded.
+
+### Synopsis
+
+- Using Hooks
+
+  ```js
+  function HookSynopsis() {
+    const counterState = fiery.useFirebaseDatabase(counterRef)
+    if (counterState.loading) {
+      return <UI.Loading />
+    } else if (counterState.failed) {
+      return (
+        <UI.ErrorMessage
+          error={counterState.error}
+          retry={counterState.retry}
+        />
+      )
+    } else {
+      return counterState.data
+    }
+  }
+  ```
+
+- Using Render Props
+
+  ```js
+  function RenderPropsSynopsis() {
+    return (
+      <fiery.Data dataRef={counterRef}>
+        {counterState =>
+          counterState.loading ? (
+            <UI.Loading />
+          ) : counterState.failed ? (
+            <UI.ErrorMessage
+              error={counterState.error}
+              retry={counterState.retry}
+            />
+          ) : (
+            counterState.data
+          )
+        }
+      </fiery.Data>
+    )
+  }
+  ```
+
+- Suspense + Hooks
+
+  ```js
+  function SuspenseHookSynopsis() {
+    const counterState = fiery.useFirebaseDatabase(counterRef)
+    return counterState.unstable_read()
+  }
+  ```
+
+- Suspense + Render Props
+  ```js
+  function SuspenseRenderPropsSynopsis() {
+    return (
+      <fiery.Data dataRef={counterRef}>
+        {counterState => counterState.unstable_read()}
+      </fiery.Data>
+    )
+  }
+  ```
 
 ### `fiery.DataState<T>` — Representing remote data.
 

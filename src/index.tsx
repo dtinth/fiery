@@ -35,144 +35,247 @@ export type Suspensible<T> = {
   unstable_read: () => T
 }
 
-function receiveError(
-  error: Error,
-  retry: () => void
-): <T>(oldState: DataState<T>) => DataState<T> {
-  return oldState => ({
-    loading: false,
-    failed: true,
-    error: error,
-    data: oldState.data,
-    retry
-  })
-}
+type DataAction =
+  | { type: 'begin loading' }
+  | { type: 'value'; data: any }
+  | { type: 'error'; error: Error; retry: () => void }
 
-function retryBegin<T>(oldState: DataState<T>): DataState<T> {
-  if (oldState.failed) {
-    return {
-      loading: true,
-      failed: true,
-      error: oldState.error,
-      data: oldState.data
-    }
-  } else {
-    return {
-      loading: true,
-      failed: false,
-      data: oldState.data
-    }
+interface DataProvider {
+  cacheKey: string
+  loadOnce(): Promise<any>
+  subscribe(
+    onNext: (value: any) => void,
+    onError: (e: Error) => void
+  ): {
+    unsubscribe(): void
   }
 }
 
-export function useFirebaseAuth() {
-  const [auth] = React.useState(() => firebase.auth())
-  const [retryCount, setRetryCount] = React.useState(() => 0)
-  const [authState, setAuthState] = React.useState<
-    DataState<firebase.User | null>
-  >(() => {
-    return auth.currentUser
-      ? { loading: false, failed: false, data: auth.currentUser }
-      : { loading: true, failed: false, data: auth.currentUser }
-  })
-  React.useEffect(
-    () => {
-      return auth.onAuthStateChanged(
-        user => {
-          setAuthState({ loading: false, failed: false, data: user })
-        },
-        error => {
-          const retry = () => {
-            setAuthState(retryBegin)
-            setRetryCount(c => c + 1)
-          }
-          setAuthState(receiveError((error as any) as Error, retry))
+class DataCache {
+  private map = new Map<string, DataCacheEntry>()
+  initialDataState: DataState<any> = { loading: true, failed: false }
+  reducer(state: DataState<any>, action: DataAction): DataState<any> {
+    switch (action.type) {
+      case 'begin loading':
+        return state.failed
+          ? {
+              loading: true,
+              failed: true,
+              error: state.error,
+              data: state.data
+            }
+          : {
+              loading: true,
+              failed: false,
+              data: state.data
+            }
+      case 'value':
+        return { loading: false, failed: false, data: action.data }
+      case 'error':
+        return {
+          failed: true,
+          loading: false,
+          data: state.data,
+          error: action.error,
+          retry: action.retry
         }
-      )
-    },
-    [retryCount]
-  )
-  return authState
+    }
+    return state
+  }
+  getSource(provider: DataProvider): DataCacheEntry {
+    const cacheKey = provider.cacheKey
+    if (this.map.has(cacheKey)) {
+      return this.map.get(cacheKey)!
+    }
+    let gone = false
+    const source = new DataCacheEntry(provider, () => {
+      if (gone) return
+      gone = true
+      this.map.delete(cacheKey)
+    })
+    this.map.set(cacheKey, source)
+    return source
+  }
+}
+
+export const _cache = new DataCache()
+
+class DataCacheEntry {
+  private pending = true
+  private promise: Promise<void> | null = null
+  private latestData: any = null
+  private error: Error | null = null
+  private onErrorSimulated: (() => void) | null = null
+  private subscriberCount = 0
+  constructor(public provider: DataProvider, private unregister: () => void) {}
+  subscribe(dispatch: (action: DataAction) => void) {
+    const onNext = (value: any) => {
+      this.latestData = value
+      this.pending = false
+      dispatch({ type: 'value', data: this.latestData })
+    }
+    const onError = (e: Error) => {
+      this.error = e
+      this.pending = false
+      dispatch({ type: 'error', error: this.error, retry })
+    }
+    const retry = () => {
+      this.unregister()
+      dispatch({ type: 'begin loading' })
+    }
+    this.onErrorSimulated = () => {
+      dispatch({ type: 'error', error: this.error!, retry })
+    }
+    const subscription = this.provider.subscribe(onNext, onError)
+    if (this.pending) {
+      dispatch({ type: 'begin loading' })
+    }
+    this.subscriberCount++
+    return () => {
+      this.subscriberCount--
+      if (!this.pending && !this.subscriberCount) {
+        this.unregister()
+      }
+      subscription.unsubscribe()
+      this.onErrorSimulated = null
+    }
+  }
+  read() {
+    if (this.pending) {
+      if (!this.promise) this.promise = this.loadOnce()
+      throw this.promise
+    }
+    if (this.error) {
+      setTimeout(() => this.unregister())
+      throw this.error
+    }
+    return this.latestData
+  }
+  simulateError(e: Error): void {
+    this.error = e
+    this.pending = false
+    if (this.onErrorSimulated) this.onErrorSimulated()
+  }
+  private async loadOnce() {
+    try {
+      this.latestData = await this.provider.loadOnce()
+    } catch (e) {
+      this.error = e
+    } finally {
+      this.pending = false
+    }
+  }
 }
 
 type TestInterface = {
   simulateError?: (error: Error) => void
 }
 
+class FirebaseAuthProvider implements DataProvider {
+  constructor() {}
+  get cacheKey() {
+    return 'auth'
+  }
+  loadOnce(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const auth = firebase.auth()
+      let shouldUnsubscribeNow = false
+      let unsubscribe: (() => void) | null = null
+      const tryToUnsubscribe = () => {
+        if (unsubscribe) {
+          unsubscribe()
+        } else {
+          shouldUnsubscribeNow = true
+        }
+      }
+      unsubscribe = auth.onAuthStateChanged(
+        user => {
+          resolve(user)
+          tryToUnsubscribe()
+        },
+        error => {
+          reject(error)
+          tryToUnsubscribe()
+        }
+      )
+      if (shouldUnsubscribeNow) {
+        unsubscribe()
+      }
+    })
+  }
+  subscribe(
+    onNext: (value: any) => void,
+    onError: (e: Error) => void
+  ): { unsubscribe(): void } {
+    const auth = firebase.auth()
+    const unsubscribe = auth.onAuthStateChanged(onNext, onError as any)
+    return { unsubscribe }
+  }
+}
+
+export function useFirebaseAuth(): DataState<firebase.User> &
+  Suspensible<firebase.User> {
+  const [dataState, dispatch] = React.useReducer(
+    _cache.reducer,
+    _cache.initialDataState
+  )
+  const source = _cache.getSource(new FirebaseAuthProvider())
+  React.useEffect(() => source.subscribe(dispatch), [source])
+  return {
+    ...dataState,
+    unstable_read: () => source.read()
+  }
+}
+
+class FirebaseDatabaseProvider implements DataProvider {
+  constructor(public query: firebase.database.Query) {}
+  get cacheKey() {
+    const query: firebase.database.Query & {
+      queryIdentifier?: () => string
+    } = this.query
+    return [
+      query.toString(),
+      query.queryIdentifier && query.queryIdentifier()
+    ].join('?')
+  }
+  async loadOnce(): Promise<any> {
+    return (await this.query.once('value')).val()
+  }
+  subscribe(
+    onNext: (value: any) => void,
+    onError: (e: Error) => void
+  ): { unsubscribe(): void } {
+    const onValue = (snapshot: firebase.database.DataSnapshot | null) => {
+      onNext(snapshot && snapshot.val())
+    }
+    this.query.on('value', onValue, onError)
+    return {
+      unsubscribe: () => {
+        this.query.off('value', onValue)
+      }
+    }
+  }
+}
+
 export function useFirebaseDatabase(
   query: firebase.database.Query,
   refTestInterface?: (testInterface: TestInterface | null) => void
 ): DataState<any> & Suspensible<any> {
-  const suspenseErrorRef = React.useRef<Error | null>(null)
-  const [testInterface] = React.useState<TestInterface>(() => ({}))
-  const [dataState, setDataState] = React.useState<DataState<any>>(() => {
-    return { loading: true, failed: false }
-  })
-  const [retryCount, setRetryCount] = React.useState(() => 0)
-  const identifier = getDatabaseQueryIdentifier(query)
-  React.useEffect(
-    () => {
-      let unsubscribed = false
-      const subscriber = (snapshot: firebase.database.DataSnapshot | null) => {
-        if (unsubscribed) return
-        setDataState({
-          loading: false,
-          failed: false,
-          data: snapshot && snapshot.val()
-        })
-      }
-      const onError = (e: Error) => {
-        const retry = () => {
-          setDataState(retryBegin)
-          setRetryCount(c => c + 1)
-        }
-        setDataState(receiveError(e, retry))
-      }
-      query.on('value', subscriber, onError)
-      testInterface.simulateError = e => onError(e)
-      return () => {
-        unsubscribed = true
-
-        // Wait a bit before actually unsubscribing, to keep cached data.
-        setTimeout(() => {
-          query.off('value', subscriber)
-        })
-      }
-    },
-    [identifier, retryCount]
+  const [dataState, dispatch] = React.useReducer(
+    _cache.reducer,
+    _cache.initialDataState
   )
-  React.useEffect(
-    () => {
-      if (refTestInterface) refTestInterface(testInterface)
-      return () => {
-        if (refTestInterface) refTestInterface(null)
-      }
-    },
-    [refTestInterface]
+  const source = _cache.getSource(new FirebaseDatabaseProvider(query))
+  React.useEffect(() => source.subscribe(dispatch), [source])
+  ;(React as any).useImperativeHandle(
+    refTestInterface,
+    () => ({ simulateError: e => source.simulateError(e) } as TestInterface),
+    [source]
   )
-  function read() {
-    if (suspenseErrorRef.current) {
-      throw suspenseErrorRef.current
-    }
-    let readValue: any
-    let read: boolean = false
-    let onRead: () => void
-    const callback = (snapshot: firebase.database.DataSnapshot | null) => {
-      read = true
-      readValue = snapshot && snapshot.val()
-      setTimeout(() => query.off('value', callback))
-      if (onRead) onRead()
-    }
-    const onError = (error: Error) => {
-      suspenseErrorRef.current = error
-      setTimeout(() => query.off('value', callback))
-      if (onRead) onRead()
-    }
-    query.on('value', callback, onError)
-    if (read) return readValue
-    throw new Promise(resolve => (onRead = resolve))
+  return {
+    ...dataState,
+    unstable_read: () => source.read()
   }
-  return { ...dataState, unstable_read: read }
 }
 
 export function Auth(props: {
@@ -190,13 +293,4 @@ export function Data(props: {
   return props.children(dataState)
 }
 
-function getDatabaseQueryIdentifier(
-  query: firebase.database.Query & { queryIdentifier?: () => string }
-) {
-  return [
-    query.toString(),
-    query.queryIdentifier && query.queryIdentifier()
-  ].join('?')
-}
-
-export default { useFirebaseAuth, useFirebaseDatabase, Auth, Data }
+export default { useFirebaseAuth, useFirebaseDatabase, Auth, Data, _cache }

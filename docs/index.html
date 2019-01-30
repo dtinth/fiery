@@ -168,8 +168,8 @@ pre[class*="language-"] {
 #######################
 -->
 
-          <script crossorigin src="https://unpkg.com/react@16.7.0-alpha.0/umd/react.development.js"></script>
-          <script crossorigin src="https://unpkg.com/react-dom@16.7.0-alpha.0/umd/react-dom.development.js"></script>
+          <script crossorigin src="https://unpkg.com/react@16.8.0-alpha.1/umd/react.development.js"></script>
+          <script crossorigin src="https://unpkg.com/react-dom@16.8.0-alpha.1/umd/react-dom.development.js"></script>
           <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
           <script src="https://www.gstatic.com/firebasejs/4.6.1/firebase.js"></script>
           <script>
@@ -184,8 +184,8 @@ pre[class*="language-"] {
             firebase.initializeApp(config);
           </script>
           <script>
-            // For file: protocol, load fiery from local file.
-            if (location.protocol === 'file:') {
+            // For file: protocol or localhost, load fiery from local file.
+            if (location.protocol === 'file:' || location.hostname === 'localhost') {
               document.write('<script src="../umd/fiery.js"><\/script>')
             }
           </script>
@@ -511,8 +511,9 @@ ReactDOM.render(
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar</span> <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>My Guestbook<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.NavBar.Item</span> <span class="token attr-name">label</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>Contact<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
       <span class="token punctuation">{</span><span class="token comment">/* Subscribe to the authentication state.
-          We use the Render Props technique to localize updates
-          to a single &lt;UI.NavBar.Item /&gt; component. */</span><span class="token punctuation">}</span>
+          NOTE: We use the Render Props technique here to localize updates
+          to a single &lt;UI.NavBar.Item /&gt; component without requiring a new
+          React component. */</span><span class="token punctuation">}</span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Auth</span><span class="token punctuation">&gt;</span></span>
         <span class="token punctuation">{</span><span class="token comment">/* `authState` contains `loading`, `failed`, and `data` properties. */</span><span class="token punctuation">}</span>
         <span class="token punctuation">{</span>authState <span class="token operator">=&gt;</span>
@@ -644,8 +645,9 @@ function Nav() {
     <UI.NavBar title="My Guestbook">
       <UI.NavBar.Item label="Contact" />
       {/* Subscribe to the authentication state.
-          We use the Render Props technique to localize updates
-          to a single <UI.NavBar.Item /> component. */}
+          NOTE: We use the Render Props technique here to localize updates
+          to a single <UI.NavBar.Item /> component without requiring a new
+          React component. */}
       <fiery.Auth>
         {/* `authState` contains `loading`, `failed`, and `data` properties. */}
         {authState =>
@@ -780,13 +782,16 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token comment">// Set up an Error Boundary to catch errors.</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorBoundary</span><span class="token punctuation">&gt;</span></span>
-      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Song</span> <span class="token punctuation">/&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SectionSelector</span> <span class="token punctuation">/&gt;</span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>UI.ErrorBoundary</span><span class="token punctuation">&gt;</span></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token keyword">function</span> <span class="token function">Song</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> sections <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;intro&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;bridge&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;chorus&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;error&apos;</span><span class="token punctuation">]</span>
+<span class="token keyword">function</span> <span class="token function">SectionSelector</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// `error` &#x2014; always results in an error.</span>
+  <span class="token comment">// `protected` &#x2014; only logged in users can see. If you log out, you will get en error.</span>
+  <span class="token comment">// `even` &#x2014; only accessible when the Counter (1st demo) contains an even number.</span>
+  <span class="token keyword">const</span> sections <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&apos;intro&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;bridge&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;chorus&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;error&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;protected&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;even&apos;</span><span class="token punctuation">]</span>
   <span class="token keyword">const</span> <span class="token punctuation">[</span>currentSection<span class="token punctuation">,</span> setCurrentSection<span class="token punctuation">]</span> <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">useState</span><span class="token punctuation">(</span><span class="token string">&apos;intro&apos;</span><span class="token punctuation">)</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>section</span><span class="token punctuation">&gt;</span></span>
@@ -799,13 +804,14 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
         <span class="token punctuation">{</span><span class="token comment">/* Use `React.Suspense` to display a loading UI
             if any children is not ready to render */</span><span class="token punctuation">}</span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>React.Suspense</span> <span class="token attr-name">fallback</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
-          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Lyrics</span> <span class="token attr-name">sectionName</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>currentSection<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SectionContent</span> <span class="token attr-name">sectionName</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>currentSection<span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
         <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>React.Suspense</span><span class="token punctuation">&gt;</span></span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>UI.ContentBox</span><span class="token punctuation">&gt;</span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>section</span><span class="token punctuation">&gt;</span></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
-<span class="token keyword">function</span> <span class="token function">Lyrics</span><span class="token punctuation">(</span><span class="token punctuation">{</span> sectionName <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">function</span> <span class="token function">SectionContent</span><span class="token punctuation">(</span><span class="token punctuation">{</span> sectionName <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> dataRef <span class="token operator">=</span> firebase<span class="token punctuation">.</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ref</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`demos/tabs/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>sectionName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span>
   <span class="token comment">// Use `.unstable_read()` to read the data out of Firebase.</span>
   <span class="token comment">// Suspends rendering if data is not ready.</span>
@@ -816,6 +822,7 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
+
 ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SuspenseDemo</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;SuspenseDemo&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 </pre><script type="text/babel">// Demo: SuspenseDemo
 // In this demo, there are no checks for Loading/Error state.
@@ -827,13 +834,16 @@ function SuspenseDemo() {
   return (
     // Set up an Error Boundary to catch errors.
     <UI.ErrorBoundary>
-      <Song />
+      <SectionSelector />
     </UI.ErrorBoundary>
   )
 }
 
-function Song() {
-  const sections = ['intro', 'bridge', 'chorus', 'error']
+function SectionSelector() {
+  // `error` — always results in an error.
+  // `protected` — only logged in users can see. If you log out, you will get en error.
+  // `even` — only accessible when the Counter (1st demo) contains an even number.
+  const sections = ['intro', 'bridge', 'chorus', 'error', 'protected', 'even']
   const [currentSection, setCurrentSection] = React.useState('intro')
   return (
     <section>
@@ -846,13 +856,14 @@ function Song() {
         {/* Use `React.Suspense` to display a loading UI
             if any children is not ready to render */}
         <React.Suspense fallback={<UI.Loading />}>
-          <Lyrics sectionName={currentSection} />
+          <SectionContent sectionName={currentSection} />
         </React.Suspense>
       </UI.ContentBox>
     </section>
   )
 }
-function Lyrics({ sectionName }) {
+
+function SectionContent({ sectionName }) {
   const dataRef = firebase.database().ref(`demos/tabs/${sectionName}`)
   // Use `.unstable_read()` to read the data out of Firebase.
   // Suspends rendering if data is not ready.
@@ -863,10 +874,75 @@ function Lyrics({ sectionName }) {
     </div>
   )
 }
+
 ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 </script>
 <h2 id="api-usage" class="yellow bt b--orange bw3 mt5 pt4 f1 lh-title">API Usage</h2>
-<p>fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> provides both <a href="https://reactjs.org/hooks" class="light-pink">hooks</a>- and <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a>-based APIs (<a href="https://twitter.com/dtinth/status/1055874999377047553" class="light-pink">rationale</a>).</p>
+<p>fiery <img class="emoji" draggable="false" alt="&#x1F525;" src="https://twemoji.maxcdn.com/2/svg/1f525.svg"> provides both <a href="https://reactjs.org/hooks" class="light-pink">hooks</a>-based and <a href="https://reactjs.org/docs/render-props.html" class="light-pink">render props</a>-based APIs (<a href="https://twitter.com/dtinth/status/1055874999377047553" class="light-pink">rationale</a>).</p>
+<p>The state object will contain <code class="light-green">loading</code>, <code class="light-green">failed</code>, <code class="light-green">data</code>, <code class="light-green">error</code>, and <code class="light-green">retry</code> properties. Or you can invoke an experimental method <code class="light-green">unstable_read()</code> to make React <a href="https://reactjs.org/docs/react-api.html#reactsuspense" class="light-pink">suspend</a> rendering until it is loaded.</p>
+<h3 id="synopsis" class="gold mt5 f3 lh-title">Synopsis</h3>
+<ul>
+<li>
+<p>Using Hooks</p>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">HookSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> counterState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>counterRef<span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>counterState<span class="token punctuation">.</span>loading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token punctuation">/&gt;</span></span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>counterState<span class="token punctuation">.</span>failed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorMessage</span>
+        <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>error<span class="token punctuation">}</span></span>
+        <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>retry<span class="token punctuation">}</span></span>
+      <span class="token punctuation">/&gt;</span></span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> counterState<span class="token punctuation">.</span>data
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</pre>
+</li>
+<li>
+<p>Using Render Props</p>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">RenderPropsSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Data</span> <span class="token attr-name">dataRef</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterRef<span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
+      <span class="token punctuation">{</span>counterState <span class="token operator">=&gt;</span>
+        counterState<span class="token punctuation">.</span>loading <span class="token operator">?</span> <span class="token punctuation">(</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token punctuation">)</span> <span class="token punctuation">:</span> counterState<span class="token punctuation">.</span>failed <span class="token operator">?</span> <span class="token punctuation">(</span>
+          <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ErrorMessage</span>
+            <span class="token attr-name">error</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>error<span class="token punctuation">}</span></span>
+            <span class="token attr-name">retry</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterState<span class="token punctuation">.</span>retry<span class="token punctuation">}</span></span>
+          <span class="token punctuation">/&gt;</span></span>
+        <span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token punctuation">(</span>
+          counterState<span class="token punctuation">.</span>data
+        <span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fiery.Data</span><span class="token punctuation">&gt;</span></span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</pre>
+</li>
+<li>
+<p>Suspense + Hooks</p>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">SuspenseHookSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> counterState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>counterRef<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> counterState<span class="token punctuation">.</span><span class="token function">unstable_read</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</pre>
+</li>
+<li>
+<p>Suspense + Render Props</p>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">SuspenseRenderPropsSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Data</span> <span class="token attr-name">dataRef</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterRef<span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
+      <span class="token punctuation">{</span>counterState <span class="token operator">=&gt;</span> counterState<span class="token punctuation">.</span><span class="token function">unstable_read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fiery.Data</span><span class="token punctuation">&gt;</span></span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</pre>
+</li>
+</ul>
 <h3 id="fiery.datastate%3Ct%3E-%E2%80%94-representing-remote-data." class="gold mt5 f3 lh-title"><code>fiery.DataState&lt;T&gt;</code> &#x2014; Representing remote data.</h3>
 <p>When loading data from remote sources, the data may not come immediately. In fiery, to represent this, we use a <code class="light-green">DataState&lt;T&gt;</code>, which is a plain JS object with these properties:</p>
 <ul>
