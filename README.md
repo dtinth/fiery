@@ -23,7 +23,7 @@ import fiery from 'fiery'
 If you’re [using React with no build tooling](https://reactjs.org/docs/add-react-to-a-website.html), a UMD version is also available (make sure to include `react`, `react-dom`, and `firebase` before including `fiery`):
 
 ```
-<script src="https://unpkg.com/fiery@0.4.1/umd/fiery.js">
+<script src="https://unpkg.com/fiery@0.5.0/umd/fiery.js">
 </script>
 ```
 
