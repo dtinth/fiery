@@ -382,13 +382,13 @@ window.UI = (function() {
 ################################
 -->
 
-      <article class="br3 hidden ba b--black-10 mv4">
+      <article class="br3 hidden mt4 mb1">
         <h1 class="f4 bg-orange light-yellow br3 br--top mv0 pv2 ph3">Demo: DistributedCounter</h1>
         <div class="pa3 bt bg-dark-gray b--white-10" id="DistributedCounter"></div>
       </article>
     
 
-<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="DistributedCounter"><span class="token comment">// Demo: DistributedCounter</span>
+<details open><summary><strong>View source</strong> (32 SLOC)</summary><pre class="code mono f6 bg-dark-gray pa3 lh-title mt0" data-demo="DistributedCounter" data-sloc="32"><span class="token comment">// Demo: DistributedCounter</span>
 <span class="token comment">// This demo app uses only Functional Components!</span>
 
 <span class="token comment">// Normal Firebase stuff...</span>
@@ -433,7 +433,7 @@ ReactDOM<span class="token punctuation">.</span><span class="token function">ren
   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>DistributedCounter</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span>
   document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;DistributedCounter&apos;</span><span class="token punctuation">)</span>
 <span class="token punctuation">)</span>
-</pre><script type="text/babel">// Demo: DistributedCounter
+</pre></details><script type="text/babel">// Demo: DistributedCounter
 // This demo app uses only Functional Components!
 
 // Normal Firebase stuff...
@@ -485,13 +485,13 @@ ReactDOM.render(
 ##########################
 -->
 
-      <article class="br3 hidden ba b--black-10 mv4">
+      <article class="br3 hidden mt4 mb1">
         <h1 class="f4 bg-orange light-yellow br3 br--top mv0 pv2 ph3">Demo: GuestbookApp</h1>
         <div class="pa3 bt bg-dark-gray b--white-10" id="GuestbookApp"></div>
       </article>
     
 
-<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="GuestbookApp"><span class="token comment">// Demo: GuestbookApp</span>
+<details><summary><strong>View source</strong> (97 SLOC)</summary><pre class="code mono f6 bg-dark-gray pa3 lh-title mt0" data-demo="GuestbookApp" data-sloc="97"><span class="token comment">// Demo: GuestbookApp</span>
 <span class="token comment">// This demo app uses only Functional Components!</span>
 <span class="token keyword">function</span> <span class="token function">GuestbookApp</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
@@ -625,7 +625,7 @@ ReactDOM.render(
 <span class="token comment">// Render the app...</span>
 <span class="token comment">//</span>
 ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>GuestbookApp</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;GuestbookApp&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-</pre><script type="text/babel">// Demo: GuestbookApp
+</pre></details><script type="text/babel">// Demo: GuestbookApp
 // This demo app uses only Functional Components!
 function GuestbookApp() {
   return (
@@ -766,13 +766,13 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 ##########################
 -->
 
-      <article class="br3 hidden ba b--black-10 mv4">
+      <article class="br3 hidden mt4 mb1">
         <h1 class="f4 bg-orange light-yellow br3 br--top mv0 pv2 ph3">Demo: SuspenseDemo</h1>
         <div class="pa3 bt bg-dark-gray b--white-10" id="SuspenseDemo"></div>
       </article>
     
 
-<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-demo="SuspenseDemo"><span class="token comment">// Demo: SuspenseDemo</span>
+<details><summary><strong>View source</strong> (35 SLOC)</summary><pre class="code mono f6 bg-dark-gray pa3 lh-title mt0" data-demo="SuspenseDemo" data-sloc="35"><span class="token comment">// Demo: SuspenseDemo</span>
 <span class="token comment">// In this demo, there are no checks for Loading/Error state.</span>
 <span class="token comment">// Loading state is handled by React.Suspense.</span>
 <span class="token comment">// Error state is handled by using an Error Boundary.</span>
@@ -797,7 +797,7 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>section</span><span class="token punctuation">&gt;</span></span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Tabs</span>
         <span class="token attr-name">tabs</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>sections<span class="token punctuation">}</span></span>
-        <span class="token attr-name">currentSection</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>currentSection<span class="token punctuation">}</span></span>
+        <span class="token attr-name">currentTab</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>currentSection<span class="token punctuation">}</span></span>
         <span class="token attr-name">onTabChange</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>tab <span class="token operator">=&gt;</span> <span class="token function">setCurrentSection</span><span class="token punctuation">(</span>tab<span class="token punctuation">)</span><span class="token punctuation">}</span></span>
       <span class="token punctuation">/&gt;</span></span>
       <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.ContentBox</span><span class="token punctuation">&gt;</span></span>
@@ -824,7 +824,7 @@ ReactDOM.render(<GuestbookApp />, document.getElementById('GuestbookApp'))
 <span class="token punctuation">}</span>
 
 ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>SuspenseDemo</span> <span class="token punctuation">/&gt;</span></span><span class="token punctuation">,</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">&apos;SuspenseDemo&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-</pre><script type="text/babel">// Demo: SuspenseDemo
+</pre></details><script type="text/babel">// Demo: SuspenseDemo
 // In this demo, there are no checks for Loading/Error state.
 // Loading state is handled by React.Suspense.
 // Error state is handled by using an Error Boundary.
@@ -849,7 +849,7 @@ function SectionSelector() {
     <section>
       <UI.Tabs
         tabs={sections}
-        currentSection={currentSection}
+        currentTab={currentSection}
         onTabChange={tab => setCurrentSection(tab)}
       />
       <UI.ContentBox>
@@ -884,7 +884,7 @@ ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 <ul>
 <li>
 <p>Using Hooks</p>
-<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">HookSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-sloc="15"><span class="token keyword">function</span> <span class="token function">HookSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> counterState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>counterRef<span class="token punctuation">)</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>counterState<span class="token punctuation">.</span>loading<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UI.Loading</span> <span class="token punctuation">/&gt;</span></span>
@@ -903,7 +903,7 @@ ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 </li>
 <li>
 <p>Using Render Props</p>
-<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">RenderPropsSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-sloc="18"><span class="token keyword">function</span> <span class="token function">RenderPropsSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Data</span> <span class="token attr-name">dataRef</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterRef<span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
       <span class="token punctuation">{</span>counterState <span class="token operator">=&gt;</span>
@@ -925,7 +925,7 @@ ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 </li>
 <li>
 <p>Suspense + Hooks</p>
-<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">SuspenseHookSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-sloc="4"><span class="token keyword">function</span> <span class="token function">SuspenseHookSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">const</span> counterState <span class="token operator">=</span> fiery<span class="token punctuation">.</span><span class="token function">useFirebaseDatabase</span><span class="token punctuation">(</span>counterRef<span class="token punctuation">)</span>
   <span class="token keyword">return</span> counterState<span class="token punctuation">.</span><span class="token function">unstable_read</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
@@ -933,7 +933,7 @@ ReactDOM.render(<SuspenseDemo />, document.getElementById('SuspenseDemo'))
 </li>
 <li>
 <p>Suspense + Render Props</p>
-<pre class="code mono f6 bg-dark-gray pa3 lh-title"><span class="token keyword">function</span> <span class="token function">SuspenseRenderPropsSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre class="code mono f6 bg-dark-gray pa3 lh-title" data-sloc="7"><span class="token keyword">function</span> <span class="token function">SuspenseRenderPropsSynopsis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token punctuation">(</span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fiery.Data</span> <span class="token attr-name">dataRef</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span>counterRef<span class="token punctuation">}</span></span><span class="token punctuation">&gt;</span></span>
       <span class="token punctuation">{</span>counterState <span class="token operator">=&gt;</span> counterState<span class="token punctuation">.</span><span class="token function">unstable_read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
