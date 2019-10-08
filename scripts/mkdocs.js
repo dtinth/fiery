@@ -129,7 +129,7 @@ const result = postProcessMarkdown(md.render(readme)).replace(
           <script>
             // For file: protocol or localhost, load fiery from local file.
             if (location.protocol === 'file:' || location.hostname === 'localhost') {
-              document.write('<script src="../umd/fiery.js"><\\/script>')
+              document.write('<script src="../dist/fiery.umd.development.min.js"><\\/script>')
             }
           </script>
           <script>
